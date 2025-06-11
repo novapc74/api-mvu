@@ -1,0 +1,28 @@
+init: down docker-pull docker-build docker-up
+
+down: docker-down
+
+create_network:
+	@if [ -z "$$(docker network ls --filter name=mvu-server -q)" ]; then \
+		docker network create mvu-server; \
+	else \
+		echo "Docker network mvu-server already exists, skipping creation."; \
+	fi
+
+create_shared_network:
+	docker network create --driver bridge shared-network
+
+docker-down:
+	docker compose --env-file ./project/.env.local down --remove-orphans
+
+docker-pull:
+	docker compose --env-file ./project/.env.local pull
+
+docker-build:
+	docker compose --env-file ./project/.env.local build --pull
+
+docker-up: create_network
+	docker compose --env-file ./project/.env.local up -d
+
+php-cli:
+	docker compose --env-file ./project/.env.local run --rm php-cli bash

@@ -1,0 +1,84 @@
+services:
+    nginx:
+        restart: always
+        container_name: ${APP_NAME}-nginx
+        build:
+            context: docker
+            dockerfile: nginx/Dockerfile
+        ports:
+            - "8033:80"
+        volumes:
+            - ./project:/project
+        depends_on:
+            - php-fpm
+            - php-cli
+        networks:
+            - mvu-server
+
+    php-fpm:
+        container_name: ${APP_NAME}-php-fpm
+        build:
+            context: docker
+            dockerfile: php-fpm/Dockerfile
+        ports:
+            - "9000:9000"
+        volumes:
+            - ./project:/project
+        networks:
+            - mvu-server
+
+    php-cli:
+        container_name: ${APP_NAME}-php-cli
+        build:
+            context: docker
+            dockerfile: php-cli/Dockerfile
+        restart: always
+        volumes:
+            - ./project:/project
+        networks:
+            - mvu-server
+
+    maria-db:
+        restart: always
+        image: mariadb:11.1.3
+        container_name: ${APP_NAME}-maria-db
+        volumes:
+            - ./volumes/database/mysql://var/lib/mysql
+        ports:
+            - "3333:3306"
+        command: [ '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci' ]
+        environment:
+            - MYSQL_PASSWORD=${DATABASE_PASSWORD}
+            - MYSQL_USER=${DATABASE_USER}
+            - MYSQL_DATABASE=${DATABASE_NAME}
+            - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
+        networks:
+            - mvu-server
+
+#    postgres:
+#        restart: always
+#        image: postgres:12.22
+#        container_name: ${APP_NAME}-postgres
+#        volumes:
+#            - ./volumes/database://var/lib/postgresql/data
+#        ports:
+#            - "5473:5432"
+#        command: [ '--client_encoding=utf8', '--default_text_search_config=pg_catalog.english', '--listen_addresses=*' ]
+#        environment:
+#            - POSTGRES_USER=${POSTGRES_USER}
+#            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+#            - POSTGRES_DB=${POSTGRES_DB}
+#        networks:
+#            - mvu-server
+
+    mailer:
+        image: schickling/mailcatcher
+        container_name: ${APP_NAME}-mailer
+        ports:
+            - "1033:1080"
+        networks:
+            - mvu-server
+
+networks:
+    mvu-server:
+        external: true
