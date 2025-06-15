@@ -4,16 +4,19 @@ namespace App\Service\QueryParam\Filter;
 
 readonly class Filter
 {
-    public function __construct(private string $tableName, private string $field, private string $type, private mixed $value)
+    public function __construct(private string $table,
+                                private string $field,
+                                private string $type,
+                                private mixed  $value)
     {
     }
 
     /**
      * @return string
      */
-    public function getTableName(): string
+    public function getTable(): string
     {
-        return $this->tableName;
+        return $this->table;
     }
 
     /**
@@ -39,5 +42,4 @@ readonly class Filter
     {
         return $this->value;
     }
-
 }

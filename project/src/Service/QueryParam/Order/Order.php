@@ -1,19 +1,21 @@
 <?php
 
-namespace App\Service\QueryParam\Sort;
+namespace App\Service\QueryParam\Order;
 
 readonly class Order
 {
-    public function __construct(private string $tableName, private string $field, private string $type)
+    public function __construct(private string $table,
+                                private string $field,
+                                private string $type)
     {
     }
 
     /**
      * @return string
      */
-    public function getTableName(): string
+    public function getTable(): string
     {
-        return $this->tableName;
+        return $this->table;
     }
 
     /**
@@ -31,5 +33,4 @@ readonly class Order
     {
         return $this->type;
     }
-
 }

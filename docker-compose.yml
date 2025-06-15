@@ -40,7 +40,7 @@ services:
 
     maria-db:
         restart: always
-        image: mariadb:11.1.3
+        image: mariadb:11.8.2
         container_name: ${APP_NAME}-maria-db
         volumes:
             - ./volumes/database/mysql://var/lib/mysql
@@ -71,13 +71,13 @@ services:
 #        networks:
 #            - mvu-server
 
-    mailer:
-        image: schickling/mailcatcher
-        container_name: ${APP_NAME}-mailer
-        ports:
-            - "1033:1080"
-        networks:
-            - mvu-server
+#    mailer:
+#        image: schickling/mailcatcher
+#        container_name: ${APP_NAME}-mailer
+#        ports:
+#            - "1033:1080"
+#        networks:
+#            - mvu-server
 
 networks:
     mvu-server:

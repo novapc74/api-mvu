@@ -29,43 +29,45 @@ class FilterService
 
     private function initializeFilters(array $filterDataFromRequest): void
     {
-        foreach ($filterDataFromRequest as $filterTableName => $filterData) {
+        foreach ($filterDataFromRequest as $tableName => $filterData) {
 
             if (!is_array($filterData)) {
                 continue;
             }
 
-            $tableName = $filterTableName;
+            foreach ($filterData as $field => $childFilterData) {
 
-            foreach ($filterData as $field => $item) {
-
-                if (!is_array($item)) {
+                if (!is_array($childFilterData)) {
                     continue;
                 }
 
-                if (!$type = self::getType($item)) {
+                if (!$type = self::getFilterType($childFilterData)) {
                     continue;
                 }
 
-                if (!$value = $this->getValue($item)) {
+                if (!$filterValue = $this->getFilterValue($childFilterData)) {
                     continue;
                 }
 
-                $this->addFilter($tableName, $field, $type, $value);
+                $this->addFilter($tableName, $field, $type, $filterValue);
             }
         }
     }
 
-    private static function getType(array $filterFromRequest): ?string
+    private static function getFilterType(array $filterFromRequest): ?string
     {
-        $type = array_key_first($filterFromRequest);
+        $filterType = array_key_first($filterFromRequest);
 
-        return in_array($type, self::AVAILABLE_TYPES) ? $type : null;
+        if (is_string($filterType)) {
+            $filterType = strtolower($filterType);
+        }
+
+        return in_array($filterType, self::AVAILABLE_TYPES) ? $filterType : null;
     }
 
-    private static function getValue(array $filterFromRequest): mixed
+    private static function getFilterValue(array $filterFromRequest): mixed
     {
-        return array_values($filterFromRequest)[0] ?? null;
+        return $filterFromRequest[self::getFilterType($filterFromRequest)] ?? null;
     }
 
     private function addFilter(string $tableName, string $field, string $type, mixed $value): void

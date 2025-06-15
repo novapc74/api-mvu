@@ -1,4 +1,4 @@
-init: down docker-pull docker-build docker-up
+init: create_network down docker-pull docker-build docker-up
 
 down: docker-down
 
@@ -26,3 +26,8 @@ docker-up: create_network
 
 php-cli:
 	docker compose --env-file ./project/.env.local run --rm php-cli bash
+
+dev-update:
+	docker compose --env-file ./project/.env.local exec php-cli bash
+	composer install
+	bin/console d:m:m --no-inreraction

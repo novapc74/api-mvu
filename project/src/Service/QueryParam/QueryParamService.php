@@ -3,7 +3,7 @@
 namespace App\Service\QueryParam;
 
 use Generator;
-use App\Service\QueryParam\Sort\OrderService;
+use App\Service\QueryParam\Order\OrderService;
 use App\Service\QueryParam\Filter\FilterService;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -11,7 +11,7 @@ class QueryParamService
 {
     // ...test?f[company][id][eq]=10&f[employee][first_name][eq]=John&f[employee][last_name][eq]=Smith&s[company][name]=desc
     private ?FilterService $filterService = null;
-    private ?OrderService $orderService;
+    private ?OrderService $orderService = null;
 
     public function __construct(private readonly RequestStack $requestStack)
     {
@@ -38,7 +38,7 @@ class QueryParamService
         foreach ($requestData as $type => $item) {
             match ($type) {
                 'f' => $this->filterService = FilterService::init($item),
-                's' => $this->orderService = OrderService::init($item),
+                'o' => $this->orderService = OrderService::init($item),
                 default => null
             };
         }

@@ -1,13 +1,11 @@
 <?php
 
-namespace App\Service\QueryParam\Sort;
+namespace App\Service\QueryParam\Order;
 
 use Generator;
 
 class OrderService
 {
-    // ...test?f[company][id][eq]=10&f[employee][first_name][eq]=John&f[employee][last_name][eq]=Smith&s[company][name]=desc
-
     private array $orders = [];
     private const AVAILABLE_TYPE = [
         'ASC', 'DESC'
@@ -30,36 +28,40 @@ class OrderService
 
     private function initializeOrders(array $orderDataFromRequest): void
     {
-        foreach ($orderDataFromRequest as $key => $type) {
-            [$tableName, $field] = self::decodeRequestData($key);
-            $type = is_string($type) ? strtoupper($type) : null;
+        foreach ($orderDataFromRequest as $tableName => $orderData) {
 
-
-            if (self::isInvalidData($tableName, $field, $type)) {
-                return;
+            if (!is_array($orderData)) {
+                continue;
             }
 
-            $this->addOrder($tableName, $field, $type);
+            if(!$fieldName = self::getFieldName($orderData)) {
+                continue;
+            }
+
+            if(!$orderType = self::getOrderType($orderData)) {
+                continue;
+            }
+
+            $this->addOrder($tableName, $fieldName, $orderType);
         }
     }
 
-    private static function isInvalidData(?string $tableName, ?string $field, ?string $type): bool
+    private static function getFieldName(array $orderData): ?string
     {
-        return !$tableName || !$field || !$type || !in_array($type, self::AVAILABLE_TYPE);
+        return array_key_first($orderData) ?? null;
     }
 
-    private function addOrder($tableName, $field, $type): void
+    private static function getOrderType(array $orderData): ?string
+    {
+        if($orderType = $orderData[self::getFieldName($orderData)] ?? null) {
+            $orderType = strtoupper($orderType);
+        }
+
+        return in_array($orderType, self::AVAILABLE_TYPE, true) ? $orderType : null;
+    }
+
+    private function addOrder(string $tableName, string $field, string $type): void
     {
         $this->orders[] = new Order($tableName, $field, $type);
-    }
-
-    private static function decodeRequestData(string $tableField): array
-    {
-        $data = explode('.', $tableField);
-
-        return [
-            $data[0] ?? null,
-            $data[1] ?? null,
-        ];
     }
 }
