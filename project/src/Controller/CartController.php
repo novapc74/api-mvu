@@ -2,7 +2,10 @@
 
 namespace App\Controller;
 
+use App\Exception\CustomException;
 use App\Service\Cart\CartService;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -11,6 +14,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 #[Route('/api')]
 final class CartController extends AbstractController
 {
+    /**
+     * @throws OptimisticLockException
+     * @throws CustomException
+     * @throws ORMException
+     */
     #[Route('/cart/{hash}')]
     public function getCart(CartService $service, string $hash): JsonResponse
     {
