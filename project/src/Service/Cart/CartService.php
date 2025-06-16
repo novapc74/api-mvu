@@ -3,18 +3,48 @@
 namespace App\Service\Cart;
 
 use App\Entity\Cart;
+use App\Entity\CartItem;
+use App\Entity\Product;
 use Symfony\Component\Uid\Uuid;
 use App\Exception\CustomException;
 use App\Service\Crypto\Cryptography;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
+use Symfony\Component\HttpFoundation\RequestStack;
+use App\Service\Cart\CartRequestService\PostRequest\CartItemDto;
+use App\Service\Cart\CartRequestService\PostRequest\PostDecoder;
 
-readonly class CartService
+class CartService
 {
-    public function __construct(private EntityManagerInterface $entityManager,
-                                private string                 $cartSalt)
+    private ?PostDecoder $PostDecoder = null;
+
+    /**
+     * @throws CustomException
+     */
+    public function __construct(private readonly EntityManagerInterface $entityManager,
+                                private readonly RequestStack           $requestStack,
+                                private readonly string                 $cartSalt)
     {
+        $this->decodeRequest();
+    }
+
+    /**
+     * @throws CustomException
+     */
+    private function decodeRequest(): void
+    {
+        $request = $this->requestStack->getCurrentRequest();
+        $method = strtoupper($request->getMethod());
+        $requestData = $request->request->all();
+
+        if (empty($requestData)) {
+            return;
+        }
+
+        if ('POST' === $method) {
+            $this->PostDecoder = PostDecoder::init($requestData);
+        }
     }
 
     /**
@@ -29,9 +59,27 @@ readonly class CartService
         return $this->toArray($cart);
     }
 
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
     public function createCart(): array
     {
         $cart = new Cart();
+
+        /**@var CartItemDto $cartItemDto */
+        foreach ($this->PostDecoder->getCartItemDto() as $cartItemDto) {
+            $productId = $cartItemDto->getProductId();
+            $quantity = $cartItemDto->getQuantity();
+            $product = $this->entityManager->find(Product::class, $productId);
+
+            $cartItem = (new CartItem())
+                ->setCart($cart)
+                ->setProduct($product)
+                ->setQuantity($quantity);
+
+            $this->entityManager->persist($cartItem);
+        }
 
         $this->entityManager->persist($cart);
         $this->entityManager->flush();

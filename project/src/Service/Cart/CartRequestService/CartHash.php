@@ -4,9 +4,9 @@ namespace App\Service\Cart\CartRequestService;
 
 use App\Service\Crypto\Cryptography;
 
-class CartHash
+readonly class CartHash
 {
-    public function __construct(private readonly string $cartSalt)
+    public function __construct(private string $cartSalt)
     {
     }
 

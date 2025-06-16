@@ -11,33 +11,21 @@ readonly class Filter
     {
     }
 
-    /**
-     * @return string
-     */
     public function getTable(): string
     {
         return $this->table;
     }
 
-    /**
-     * @return string
-     */
     public function getField(): string
     {
         return $this->field;
     }
 
-    /**
-     * @return string
-     */
     public function getType(): string
     {
         return $this->type;
     }
 
-    /**
-     * @return mixed
-     */
     public function getValue(): mixed
     {
         return $this->value;

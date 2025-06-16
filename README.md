@@ -11,6 +11,10 @@ EXIT;
 exit
 ```
 
-```dotenv
+```
 php bin/console doctrine:database:create
+```
+
+```
+bin/console doctrine:fixtures:load --no-interaction
 ```
