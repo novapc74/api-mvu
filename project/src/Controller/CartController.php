@@ -6,9 +6,11 @@ use App\Exception\CustomException;
 use App\Service\Cart\CartService;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Service\Cart\CartRequestService\PostRequest\PostDecoder;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('/api')]
@@ -27,10 +29,17 @@ final class CartController extends AbstractController
         return new JsonResponse($cart);
     }
 
+
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
     #[Route('/cart', methods: ['POST'])]
-    public function createCart(CartService $service): JsonResponse
+    public function createCart(Request $request, CartService $service): JsonResponse
     {
-        $cart = $service->createCart();
+        $requestData = $request->request->all();
+        $postDecoder = PostDecoder::init($requestData);
+        $cart = $service->createCart($postDecoder);
 
         return new JsonResponse($cart);
     }

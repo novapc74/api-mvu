@@ -11,41 +11,16 @@ use App\Service\Crypto\Cryptography;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
-use Symfony\Component\HttpFoundation\RequestStack;
 use App\Service\Cart\CartRequestService\PostRequest\CartItemDto;
 use App\Service\Cart\CartRequestService\PostRequest\PostDecoder;
 
-class CartService
+readonly class CartService
 {
-    private ?PostDecoder $PostDecoder = null;
-
-    /**
-     * @throws CustomException
-     */
-    public function __construct(private readonly EntityManagerInterface $entityManager,
-                                private readonly RequestStack           $requestStack,
-                                private readonly string                 $cartSalt)
+    public function __construct(private EntityManagerInterface $entityManager,
+                                private string                 $cartSalt)
     {
-        $this->decodeRequest();
     }
 
-    /**
-     * @throws CustomException
-     */
-    private function decodeRequest(): void
-    {
-        $request = $this->requestStack->getCurrentRequest();
-        $method = strtoupper($request->getMethod());
-        $requestData = $request->request->all();
-
-        if (empty($requestData)) {
-            return;
-        }
-
-        if ('POST' === $method) {
-            $this->PostDecoder = PostDecoder::init($requestData);
-        }
-    }
 
     /**
      * @throws OptimisticLockException
@@ -63,12 +38,12 @@ class CartService
      * @throws OptimisticLockException
      * @throws ORMException
      */
-    public function createCart(): array
+    public function createCart(PostDecoder $postDecoder): array
     {
         $cart = new Cart();
 
         /**@var CartItemDto $cartItemDto */
-        foreach ($this->PostDecoder->getCartItemDto() as $cartItemDto) {
+        foreach ($postDecoder->getCartItemDto() as $cartItemDto) {
             $productId = $cartItemDto->getProductId();
             $quantity = $cartItemDto->getQuantity();
             $product = $this->entityManager->find(Product::class, $productId);
