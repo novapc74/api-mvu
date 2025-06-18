@@ -3,21 +3,21 @@
 namespace App\Service\Cart;
 
 use App\Entity\Cart;
-use App\Entity\CartItem;
 use App\Entity\Product;
-use App\Model\Cart\CartItemTypeDto;
+use App\Entity\CartItem;
 use Symfony\Component\Uid\Uuid;
 use App\Model\Cart\CartUpdateDto;
 use App\Exception\CustomException;
+use App\Model\Cart\CartItemTypeDto;
 use App\Service\Crypto\Cryptography;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
 
-class CartService
+readonly class CartService
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager,
-                                private readonly string                 $cartSalt)
+    public function __construct(private EntityManagerInterface $entityManager,
+                                private string                 $cartSalt)
     {
     }
 
