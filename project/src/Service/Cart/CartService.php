@@ -5,47 +5,22 @@ namespace App\Service\Cart;
 use App\Entity\Cart;
 use App\Entity\CartItem;
 use App\Entity\Product;
+use App\Model\Cart\CartItemTypeDto;
 use Symfony\Component\Uid\Uuid;
+use App\Model\Cart\CartUpdateDto;
 use App\Exception\CustomException;
 use App\Service\Crypto\Cryptography;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
-use Symfony\Component\HttpFoundation\RequestStack;
-use App\Service\Cart\CartRequestService\PostRequest\CartItemDto;
-use App\Service\Cart\CartRequestService\PostRequest\PostDecoder;
 
 class CartService
 {
-    private ?PostDecoder $PostDecoder = null;
-
-    /**
-     * @throws CustomException
-     */
     public function __construct(private readonly EntityManagerInterface $entityManager,
-                                private readonly RequestStack           $requestStack,
                                 private readonly string                 $cartSalt)
     {
-        $this->decodeRequest();
     }
 
-    /**
-     * @throws CustomException
-     */
-    private function decodeRequest(): void
-    {
-        $request = $this->requestStack->getCurrentRequest();
-        $method = strtoupper($request->getMethod());
-        $requestData = $request->request->all();
-
-        if (empty($requestData)) {
-            return;
-        }
-
-        if ('POST' === $method) {
-            $this->PostDecoder = PostDecoder::init($requestData);
-        }
-    }
 
     /**
      * @throws OptimisticLockException
@@ -59,27 +34,9 @@ class CartService
         return $this->toArray($cart);
     }
 
-    /**
-     * @throws OptimisticLockException
-     * @throws ORMException
-     */
     public function createCart(): array
     {
         $cart = new Cart();
-
-        /**@var CartItemDto $cartItemDto */
-        foreach ($this->PostDecoder->getCartItemDto() as $cartItemDto) {
-            $productId = $cartItemDto->getProductId();
-            $quantity = $cartItemDto->getQuantity();
-            $product = $this->entityManager->find(Product::class, $productId);
-
-            $cartItem = (new CartItem())
-                ->setCart($cart)
-                ->setProduct($product)
-                ->setQuantity($quantity);
-
-            $this->entityManager->persist($cartItem);
-        }
 
         $this->entityManager->persist($cart);
         $this->entityManager->flush();
@@ -87,10 +44,51 @@ class CartService
         return $this->toArray($cart);
     }
 
-    public function updateCart(): array
+    /**
+     * @throws OptimisticLockException
+     * @throws CustomException
+     * @throws ORMException
+     */
+    public function updateCart(CartUpdateDto $cartDto): array
     {
-        #TODO
-        return [];
+        $cart = self::findCardByHash($cartDto->hash);
+
+        foreach ($cartDto->cartItems as $cartItemDto) {
+
+            [$productId, $quantity, $operationType] = self::getCartItemData($cartItemDto);
+
+            if (!$cartItem = $this->entityManager->getRepository(CartItem::class)->findCartItemByProduct($cart->getId(), $productId)) {
+
+                if (!$product = $this->entityManager->find(Product::class, $productId)) {
+                    continue;
+                }
+
+                $cartItem = (new CartItem())
+                    ->setCart($cart)
+                    ->setProduct($product);
+            }
+
+            $this->entityManager->persist($cartItem);
+            $this->resolveCartItem($cartItem, $quantity, $operationType);
+        }
+
+//        $this->entityManager->flush();
+
+        return $this->toArray($cart);
+    }
+
+    private function resolveCartItem(CartItem $cartItem, float $quantity, string $operationType): void
+    {
+        #TODO в зависимости от типа операции - добавить/отнять/перезаписать/либо удалить ..
+    }
+
+    private static function getCartItemData(CartItemTypeDto $dto): array
+    {
+        return [
+            $dto->id,
+            $dto->quantity,
+            $dto->type,
+        ];
     }
 
     public function deleteCart(string $hash): void
@@ -98,7 +96,7 @@ class CartService
 
     }
 
-    public function toArray(Cart $cart): array
+    private function toArray(Cart $cart): array
     {
         $cartId = $cart->getId()->toRfc4122();
         $cartHash = $this->encodeHash($cartId);

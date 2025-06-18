@@ -3,10 +3,12 @@
 namespace App\Controller;
 
 use App\Exception\CustomException;
+use App\Model\Cart\CartUpdateDto;
 use App\Service\Cart\CartService;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -28,17 +30,23 @@ final class CartController extends AbstractController
     }
 
     #[Route('/cart', methods: ['POST'])]
-    public function createCart(CartService $service): JsonResponse
+    public function createCart(
+        CartService $service): JsonResponse
     {
         $cart = $service->createCart();
 
         return new JsonResponse($cart);
     }
 
+    /**
+     * @throws OptimisticLockException
+     * @throws CustomException
+     * @throws ORMException
+     */
     #[Route('/cart', methods: ['PATCH'])]
-    public function updateCart(CartService $service): JsonResponse
+    public function updateCart(#[MapRequestPayload] CartUpdateDto $cartDto, CartService $service): JsonResponse
     {
-        $cart = $service->updateCart();
+        $cart = $service->updateCart($cartDto);
 
         return new JsonResponse($cart);
     }
