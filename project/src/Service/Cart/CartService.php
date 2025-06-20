@@ -80,11 +80,33 @@ readonly class CartService
     private function resolveCartItem(CartItem $cartItem, float $quantity, string $operationType): void
     {
         match ($operationType) {
-            'inc' => 1, // наращиваем на 1
-            'dec' => 2, // уменьшаем на 1
-            'del' => 3, // удаляем
-            default => 4 // перезаписываем (придет количество)
+            'inc' => self::incrementCartItem($cartItem),
+            'dec' => self::decrementCartItem($cartItem),
+            'del' => self::deleteCartItem($cartItem),
+            default => self::overrideCartItem($cartItem, $quantity)
         };
+    }
+
+    private function incrementCartItem(CartItem $cartItem): void
+    {
+        #TODO увеличиваем / создаем на единицу...
+    }
+
+    private function decrementCartItem(CartItem $cartItem): void
+    {
+        #TODO уменьшаем / удаляем на единицу...
+
+    }
+
+    private function deleteCartItem(CartItem $cartItem): void
+    {
+        #TODO удаляем ...
+
+    }
+
+    private function overrideCartItem(CartItem $cartItem, int|float $quantity): void
+    {
+        #TODO перезаписываем / создаем ...
     }
 
     private static function getCartItemData(CartItemTypeDto $dto): array

@@ -43,7 +43,6 @@ final class CartController extends AbstractController
     #[Route('/cart', methods: ['PATCH'])]
     public function updateCart(#[MapRequestPayload] CartUpdateDto $cartDto, CartService $service): JsonResponse
     {
-        dd($cartDto);
         $cart = $service->updateCart($cartDto);
 
         return new JsonResponse($cart);
