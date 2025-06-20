@@ -79,7 +79,12 @@ readonly class CartService
 
     private function resolveCartItem(CartItem $cartItem, float $quantity, string $operationType): void
     {
-        #TODO в зависимости от типа операции - добавить/отнять/перезаписать/либо удалить ..
+        match ($operationType) {
+            'inc' => 1, // наращиваем на 1
+            'dec' => 2, // уменьшаем на 1
+            'del' => 3, // удаляем
+            default => 4 // перезаписываем (придет количество)
+        };
     }
 
     private static function getCartItemData(CartItemTypeDto $dto): array
