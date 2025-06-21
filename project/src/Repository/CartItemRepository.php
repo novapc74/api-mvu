@@ -18,7 +18,7 @@ class CartItemRepository extends ServiceEntityRepository
         parent::__construct($registry, CartItem::class);
     }
 
-    public function findCartItemByProduct(Uuid $cartId, Uuid $productId): ?CartItem
+    public function findCartItemByProduct(string $cartId, string $productId): ?CartItem
     {
         return $this->createQueryBuilder('ci')
             ->innerJoin('ci.cart', 'c')

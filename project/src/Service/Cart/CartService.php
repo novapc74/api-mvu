@@ -3,24 +3,24 @@
 namespace App\Service\Cart;
 
 use App\Entity\Cart;
-use App\Entity\Product;
 use App\Entity\CartItem;
 use Symfony\Component\Uid\Uuid;
-use App\Model\Cart\CartUpdateDto;
+use App\Trait\CryptographyTrait;
 use App\Exception\CustomException;
 use App\Model\Cart\CartItemTypeDto;
-use App\Service\Crypto\Cryptography;
+use App\Repository\CartItemRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
 
 readonly class CartService
 {
+    use CryptographyTrait;
+
     public function __construct(private EntityManagerInterface $entityManager,
                                 private string                 $cartSalt)
     {
     }
-
 
     /**
      * @throws OptimisticLockException
@@ -49,41 +49,35 @@ readonly class CartService
      * @throws CustomException
      * @throws ORMException
      */
-    public function updateCart(CartUpdateDto $cartDto): array
+    public function updateCart(CartItemTypeDto $cartItemDto): array
     {
-        $cart = self::findCardByHash($cartDto->hash);
+        $cart = $this->findCardByHash($cartItemDto->cartHash);
 
-        foreach ($cartDto->cartItems as $cartItemDto) {
+        $cartId = $cart->getId()->toRfc4122();
+        $productId = $cartItemDto->productId->toRfc4122();
 
-            [$productId, $quantity, $operationType] = self::getCartItemData($cartItemDto);
-
-            if (!$cartItem = $this->entityManager->getRepository(CartItem::class)->findCartItemByProduct($cart->getId(), $productId)) {
-
-                if (!$product = $this->entityManager->find(Product::class, $productId)) {
-                    continue;
-                }
-
-                $cartItem = (new CartItem())
-                    ->setCart($cart)
-                    ->setProduct($product);
-            }
+        if (!$cartItem = $this->findCartItemByCartIdAndProductId($cartId, $productId)) {
+            $cartItem = new CartItem();
+            $cart
+                ->addCartItem($cartItem);
 
             $this->entityManager->persist($cartItem);
-            $this->resolveCartItem($cartItem, $quantity, $operationType);
         }
+
+        $this->resolveCartItem($cartItem, $cartItemDto);
 
 //        $this->entityManager->flush();
 
         return $this->toArray($cart);
     }
 
-    private function resolveCartItem(CartItem $cartItem, float $quantity, string $operationType): void
+    private function resolveCartItem(CartItem $cartItem, CartItemTypeDto $dto): void
     {
-        match ($operationType) {
+        match ($dto->type) {
             'inc' => self::incrementCartItem($cartItem),
             'dec' => self::decrementCartItem($cartItem),
             'del' => self::deleteCartItem($cartItem),
-            default => self::overrideCartItem($cartItem, $quantity)
+            default => self::overrideCartItem($cartItem, $dto->quantity)
         };
     }
 
@@ -109,15 +103,6 @@ readonly class CartService
         #TODO перезаписываем / создаем ...
     }
 
-    private static function getCartItemData(CartItemTypeDto $dto): array
-    {
-        return [
-            $dto->id,
-            $dto->quantity,
-            $dto->type,
-        ];
-    }
-
     public function deleteCart(string $hash): void
     {
 
@@ -126,7 +111,7 @@ readonly class CartService
     private function toArray(Cart $cart): array
     {
         $cartId = $cart->getId()->toRfc4122();
-        $cartHash = $this->encodeHash($cartId);
+        $cartHash = self::encodeHash($this->cartSalt, $cartId);
 
         return [
             'success' => true,
@@ -137,16 +122,6 @@ readonly class CartService
         ];
     }
 
-    public function encodeHash(string $hash): string
-    {
-        return Cryptography::encrypt($this->cartSalt, $hash);
-    }
-
-    public function decodeHash(string $hash): string
-    {
-        return Cryptography::decrypt($this->cartSalt, $hash);
-    }
-
     /**
      * @throws OptimisticLockException
      * @throws CustomException
@@ -154,7 +129,7 @@ readonly class CartService
      */
     private function findCardByHash(string $hash): ?Cart
     {
-        $cartId = $this->decodeHash($hash);
+        $cartId = self::decodeHash($this->cartSalt, $hash);
 
         if (!Uuid::isValid($cartId)) {
             throw new CustomException(sprintf('Невалидный hash: "%s".', $hash), 422);
@@ -165,5 +140,13 @@ readonly class CartService
         }
 
         return $cart;
+    }
+
+    private function findCartItemByCartIdAndProductId(string $cartId, string $productId): ?CartItem
+    {
+        /**@var CartItemRepository $repository */
+        $repository = $this->entityManager->getRepository(CartItem::class);
+
+        return $repository->findCartItemByProduct($cartId, $productId);
     }
 }

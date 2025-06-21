@@ -3,8 +3,8 @@
 namespace App\Model\Cart;
 
 use Symfony\Component\Uid\Uuid;
-use Symfony\Component\Validator\Constraints as Assert;
 use App\Validator\QuantityTypeConstraint;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[QuantityTypeConstraint]
 readonly class CartItemTypeDto
@@ -14,8 +14,12 @@ readonly class CartItemTypeDto
     ];
 
     public function __construct(
+        #[Assert\NotBlank(message: 'Hash корзины обязателен')]
+        #[Assert\Length(max: 255)]
+        public string  $cartHash,
+
         #[Assert\Uuid(message: 'Невалидный идентификатор')]
-        public Uuid   $id,
+        public Uuid    $productId,
 
         public ?float  $quantity,
 

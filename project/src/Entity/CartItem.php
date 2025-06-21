@@ -17,7 +17,7 @@ class CartItem
     private ?Product $product = null;
 
     #[ORM\Column]
-    private ?float $quantity = null;
+    private ?float $quantity = 0;
 
     #[ORM\ManyToOne(inversedBy: 'cartItems')]
     private ?Cart $cart = null;
