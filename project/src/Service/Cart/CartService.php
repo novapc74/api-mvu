@@ -10,15 +10,21 @@ use App\Trait\CryptographyTrait;
 use App\Exception\CustomException;
 use App\Model\Cart\CartItemTypeDto;
 use App\Repository\CartItemRepository;
+use Symfony\Component\Lock\LockFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
+use Symfony\Component\HttpFoundation\Response;
 
 readonly class CartService
 {
     use CryptographyTrait;
 
+    private const CART_LOCK_PREFIX = 'cart_lock_';
+    private const CART_HASH_TTL = 600;
+
     public function __construct(private EntityManagerInterface $entityManager,
+                                private LockFactory            $lockFactory,
                                 private string                 $cartSalt)
     {
     }
@@ -30,7 +36,7 @@ readonly class CartService
      */
     public function getCart(string $hash): array
     {
-        $cart = $this->findCardByHash($hash);
+        $cart = $this->findCartByHash($hash);
 
         return $this->toArray($cart);
     }
@@ -52,35 +58,38 @@ readonly class CartService
      */
     public function updateCart(CartItemTypeDto $cartItemDto): array
     {
-        $cart = $this->findCardByHash($cartItemDto->cartHash);
+        return $this->withCartLock($cartItemDto->cartHash, function () use ($cartItemDto) {
 
-        $cartId = $cart->getId()->toRfc4122();
-        $productId = $cartItemDto->productId->toRfc4122();
-        $cartItem = $this->findCartItemByCartIdAndProductId($cartId, $productId);
+            $cart = $this->findCartByHash($cartItemDto->cartHash);
 
-        /** нет $cartItem + хотим уменьшить или удалить */
-        if (!$cartItem && in_array($cartItemDto->type, ['dec', 'del'])) {
-            return $this->toArray($cart);
-        }
+            $cartId = $cart->getId()->toRfc4122();
+            $productId = $cartItemDto->productId->toRfc4122();
+            $cartItem = $this->findCartItemByCartIdAndProductId($cartId, $productId);
 
-        if (!$cartItem) {
-
-            if (!$product = $this->entityManager->getRepository(Product::class)->find($productId)) {
+            /** нет $cartItem + хотим уменьшить или удалить */
+            if (!$cartItem && in_array($cartItemDto->type, ['dec', 'del'])) {
                 return $this->toArray($cart);
             }
 
-            $cartItem = (new CartItem())
-                ->setProduct($product)
-                ->setCart($cart);
+            if (!$cartItem) {
 
-            $this->entityManager->persist($cartItem);
-        }
+                if (!$product = $this->entityManager->getRepository(Product::class)->find($productId)) {
+                    return $this->toArray($cart);
+                }
 
-        $this->resolveCartItem($cartItem, $cartItemDto);
+                $cartItem = (new CartItem())
+                    ->setProduct($product)
+                    ->setCart($cart);
 
-        $this->entityManager->flush();
+                $this->entityManager->persist($cartItem);
+            }
 
-        return $this->toArray($cart);
+            $this->resolveCartItem($cartItem, $cartItemDto);
+
+            $this->entityManager->flush();
+
+            return $this->toArray($cart);
+        });
     }
 
     private function resolveCartItem(CartItem $cartItem, CartItemTypeDto $dto): void
@@ -120,9 +129,19 @@ readonly class CartService
             : $this->deleteCartItem($cartItem);
     }
 
+    /**
+     * @throws OptimisticLockException
+     * @throws CustomException
+     * @throws ORMException
+     */
     public function deleteCart(string $hash): void
     {
+        $this->withCartLock($hash, function () use ($hash) {
+            $cart = $this->findCartByHash($hash);
 
+            $this->entityManager->remove($cart);
+            $this->entityManager->flush();
+        });
     }
 
     private function toArray(Cart $cart): array
@@ -147,7 +166,7 @@ readonly class CartService
      * @throws CustomException
      * @throws ORMException
      */
-    private function findCardByHash(string $hash): ?Cart
+    private function findCartByHash(string $hash): Cart
     {
         $cartId = self::decodeHash($this->cartSalt, $hash);
 
@@ -156,7 +175,7 @@ readonly class CartService
         }
 
         if (!$cart = $this->entityManager->find(Cart::class, $cartId)) {
-            throw new CustomException('Корзина с не найдена.', 404);
+            throw new CustomException('Корзина не найдена.', 404);
         }
 
         return $cart;
@@ -168,5 +187,23 @@ readonly class CartService
         $repository = $this->entityManager->getRepository(CartItem::class);
 
         return $repository->findCartItemByProduct($cartId, $productId);
+    }
+
+    /**
+     * @throws CustomException
+     */
+    private function withCartLock(string $cartHash, callable $callback): mixed
+    {
+        $lock = $this->lockFactory->createLock(self::CART_LOCK_PREFIX . $cartHash, 30);
+
+        if (!$lock->acquire()) {
+            throw new CustomException('Не удалось получить блокировку корзины', Response::HTTP_CONFLICT);
+        }
+
+        try {
+            return $callback();
+        } finally {
+            $lock->release();
+        }
     }
 }

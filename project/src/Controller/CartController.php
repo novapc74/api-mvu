@@ -21,20 +21,17 @@ final class CartController extends AbstractController
      * @throws CustomException
      * @throws ORMException
      */
-    #[Route('/cart/{hash}')]
+    #[Route('/cart/{hash}', methods: ['GET'])]
     public function getCart(CartService $service, string $hash): JsonResponse
     {
-        $cart = $service->getCart($hash);
-
-        return new JsonResponse($cart);
+        return new JsonResponse($service->getCart($hash));
     }
 
     #[Route('/cart', methods: ['POST'])]
     public function createCart(CartService $service): JsonResponse
     {
-        return new JsonResponse($service->createCart());
+        return new JsonResponse($service->createCart(), Response::HTTP_CREATED);
     }
-
 
     /**
      * @throws OptimisticLockException
@@ -44,11 +41,14 @@ final class CartController extends AbstractController
     #[Route('/cart', methods: ['PATCH'])]
     public function updateCart(#[MapRequestPayload] CartItemTypeDto $cartItemDto, CartService $service): JsonResponse
     {
-        $cart = $service->updateCart($cartItemDto);
-
-        return new JsonResponse($cart);
+        return new JsonResponse($service->updateCart($cartItemDto));
     }
 
+    /**
+     * @throws OptimisticLockException
+     * @throws CustomException
+     * @throws ORMException
+     */
     #[Route('/cart/{hash}', methods: ['DELETE'])]
     public function deleteCart(CartService $service, string $hash): JsonResponse
     {
