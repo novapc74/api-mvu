@@ -23,5 +23,10 @@ class QuantityTypeConstraintValidator extends ConstraintValidator
             $this->context->buildViolation($constraint->message)
                 ->addViolation();
         }
+
+        if(!$object->type && !$object->quantity) {
+            $this->context->buildViolation($constraint->message)
+                ->addViolation();
+        }
     }
 }

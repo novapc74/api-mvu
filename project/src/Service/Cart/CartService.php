@@ -3,6 +3,7 @@
 namespace App\Service\Cart;
 
 use App\Entity\Cart;
+use App\Entity\Product;
 use App\Entity\CartItem;
 use Symfony\Component\Uid\Uuid;
 use App\Trait\CryptographyTrait;
@@ -55,18 +56,29 @@ readonly class CartService
 
         $cartId = $cart->getId()->toRfc4122();
         $productId = $cartItemDto->productId->toRfc4122();
+        $cartItem = $this->findCartItemByCartIdAndProductId($cartId, $productId);
 
-        if (!$cartItem = $this->findCartItemByCartIdAndProductId($cartId, $productId)) {
-            $cartItem = new CartItem();
-            $cart
-                ->addCartItem($cartItem);
+        /** нет $cartItem + хотим уменьшить или удалить */
+        if (!$cartItem && in_array($cartItemDto->type, ['dec', 'del'])) {
+            return $this->toArray($cart);
+        }
+
+        if (!$cartItem) {
+
+            if (!$product = $this->entityManager->getRepository(Product::class)->find($productId)) {
+                return $this->toArray($cart);
+            }
+
+            $cartItem = (new CartItem())
+                ->setProduct($product)
+                ->setCart($cart);
 
             $this->entityManager->persist($cartItem);
         }
 
         $this->resolveCartItem($cartItem, $cartItemDto);
 
-//        $this->entityManager->flush();
+        $this->entityManager->flush();
 
         return $this->toArray($cart);
     }
@@ -83,24 +95,29 @@ readonly class CartService
 
     private function incrementCartItem(CartItem $cartItem): void
     {
-        #TODO увеличиваем / создаем на единицу...
+        $cartItem->setQuantity($cartItem->getQuantity() + 1);
     }
 
     private function decrementCartItem(CartItem $cartItem): void
     {
-        #TODO уменьшаем / удаляем на единицу...
+        $quantity = $cartItem->getQuantity();
+        $result = $quantity - 1;
 
+        $result > 0
+            ? $cartItem->setQuantity($result)
+            : $this->deleteCartItem($cartItem);
     }
 
     private function deleteCartItem(CartItem $cartItem): void
     {
-        #TODO удаляем ...
-
+        $this->entityManager->remove($cartItem);
     }
 
     private function overrideCartItem(CartItem $cartItem, int|float $quantity): void
     {
-        #TODO перезаписываем / создаем ...
+        $quantity > 0 ?
+            $cartItem->setQuantity($quantity)
+            : $this->deleteCartItem($cartItem);
     }
 
     public function deleteCart(string $hash): void
@@ -117,7 +134,10 @@ readonly class CartService
             'success' => true,
             'cart' => [
                 'cart_hash' => $cartHash,
-                'cart_items' => [],
+                'cart_items' => $cart->getCartItems()->map(fn(CartItem $cartItem) => [
+                    'productId' => $cartItem->getProduct()->getId()->toRfc4122(),
+                    'quantity' => $cartItem->getQuantity()
+                ])->toArray(),
             ]
         ];
     }
