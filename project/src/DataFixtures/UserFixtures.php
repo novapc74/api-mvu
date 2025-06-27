@@ -20,7 +20,7 @@ class UserFixtures extends AppFixtures
 
     protected function loadData(ObjectManager $manager): void
     {
-        if (!$manager->getRepository(User::class)->findOneBy(['email' => 'admin@admin.com'])) {
+        if (!$manager->getRepository(User::class)->findOneBy(['email' => self::USER_AUTH['email']])) {
 
             $this->createEntity(User::class, 1, function (User $user) {
                 $user
