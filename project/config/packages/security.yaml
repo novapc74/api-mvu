@@ -9,23 +9,19 @@ security:
             entity:
                 class: App\Entity\User
                 property: email
-    firewalls:
-        login:
-            pattern: ^/api/login
-            stateless: true
-            json_login:
-                check_path: /api/login_check
-                success_handler: lexik_jwt_authentication.handler.authentication_success
-                failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
+    firewalls:
         api:
             pattern: ^/api
             stateless: true
+            entry_point: jwt
+            json_login:
+                check_path: api_login_check # or, if you have defined a route for your login path, the route name you used
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
             jwt: ~
-
-#        dev:
-#            pattern: ^/(_(profiler|wdt)|css|images|js)/
-#            security: false
+            refresh_jwt:
+                check_path: /api/token/refresh
 
         main:
             lazy: true
