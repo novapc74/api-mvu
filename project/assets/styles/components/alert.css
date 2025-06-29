@@ -1,0 +1,52 @@
+/* alert.css */
+
+/* Общие стили для всех типов оповещений */
+.alert {
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 5px;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+}
+
+/* Стили для успешного сообщения */
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+/* Стили для предупреждения */
+.alert-warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+}
+
+/* Стили для ошибки */
+.alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Стили для информационного сообщения */
+.alert-info {
+    background-color: #cce5ff;
+    color: #004085;
+    border: 1px solid #b8daff;
+}
+
+/* Стили для кнопки закрытия */
+.alert-close {
+    float: right;
+    font-size: 20px;
+    font-weight: bold;
+    color: inherit;
+    cursor: pointer;
+}
+
+/* Эффект при наведении на кнопку закрытия */
+.alert-close:hover {
+    color: #000;
+}

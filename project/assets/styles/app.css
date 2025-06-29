@@ -1,0 +1,6 @@
+/* main.css */
+@import url("./components/alert.css");
+
+body {
+    background-color: lightgray;
+}

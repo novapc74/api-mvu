@@ -31,3 +31,6 @@ dev-update:
 	docker compose --env-file ./project/.env.local exec php-cli bash
 	composer install
 	bin/console d:m:m --no-inreraction
+
+yarn-watch:
+	docker compose --env-file ./project/.env.local run --rm node-cli yarn watch

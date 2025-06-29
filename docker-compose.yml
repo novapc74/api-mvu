@@ -15,6 +15,16 @@ services:
         networks:
             - mvu-server
 
+    node-cli:
+        container_name: ${APP_NAME}-node-cli
+        build:
+            context: docker
+            dockerfile: node-cli/Dockerfile
+        volumes:
+            - ./project:/project
+        networks:
+            - mvu-server
+
     php-fpm:
         container_name: ${APP_NAME}-php-fpm
         build:
