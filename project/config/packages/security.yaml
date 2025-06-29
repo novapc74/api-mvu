@@ -11,25 +11,14 @@ security:
                 property: email
 
     firewalls:
-        api:
-            pattern: ^/api
-            stateless: true
-            entry_point: jwt
-            json_login:
-                check_path: api_login_check # or, if you have defined a route for your login path, the route name you used
-                success_handler: lexik_jwt_authentication.handler.authentication_success
-                failure_handler: lexik_jwt_authentication.handler.authentication_failure
-            jwt: ~
-            refresh_jwt:
-                check_path: /api/token/refresh
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
 
         main:
             lazy: true
             provider: app_user_provider
-            json_login:
-                check_path: api_login
-            logout:
-                path: /logout
+
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
 

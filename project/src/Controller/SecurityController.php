@@ -24,6 +24,7 @@ final class SecurityController extends AbstractController
     public function login(#[CurrentUser] ?User $user): Response
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
         if (null === $user) {
             return new JsonResponse([
                 'message' => 'missing credentials',
