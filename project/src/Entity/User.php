@@ -31,6 +31,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
+    public static function availableUserRole(bool $isFlip = false): array
+    {
+        $data = [
+            'администратор' => 'ROLE_ADMIN',
+            'пользователь' => 'ROLE_USER',
+        ];
+
+        return $isFlip ? array_flip($data) : $data;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -55,7 +65,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getUserIdentifier(): string
     {
-        return (string) $this->email;
+        return (string)$this->email;
     }
 
     /**
