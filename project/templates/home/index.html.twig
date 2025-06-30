@@ -5,13 +5,9 @@
 {% block body %}
 
     {{ component('Alert', {
-        id: 'custom-alert-id',
         type: 'info',
         message: 'Danger Will Robinson!'
     }) }}
 
-    <div {{ attributes.defaults({class: 'alert alert-' ~ type}) }}>
-        {{ message }}
-    </div>
 
 {% endblock %}
