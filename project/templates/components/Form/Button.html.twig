@@ -1,0 +1,4 @@
+{% props type = null %}
+<button {% if type %}type="{{ type }} {% endif %}">
+    {% block content %}Клик!{% endblock %}
+</button>

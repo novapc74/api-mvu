@@ -4,10 +4,10 @@
 
 {% block body %}
 
-    {{ component('Alert', {
-        type: type,
-        message: 'Danger Will Robinson!'
-    }) }}
+    {% if app.user %}
 
+        Вы авторизованы как {{ app.user.userIdentifier }}
+
+    {% endif %}
 
 {% endblock %}

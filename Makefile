@@ -1,6 +1,4 @@
-init: create_network down docker-pull docker-build docker-up
-
-down: docker-down
+init: create_network docker-down docker-pull docker-build docker-up
 
 create_network:
 	@if [ -z "$$(docker network ls --filter name=mvu-server -q)" ]; then \
