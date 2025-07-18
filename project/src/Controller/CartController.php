@@ -38,7 +38,7 @@ final class CartController extends AbstractController
      * @throws CustomException
      * @throws ORMException
      */
-    #[Route('/cart', methods: ['PATCH'])]
+    #[Route('/cart', methods: ['PUT'])]
     public function updateCart(#[MapRequestPayload] CartItemTypeDto $cartItemDto, CartService $service): JsonResponse
     {
         return new JsonResponse($service->updateCart($cartItemDto));
