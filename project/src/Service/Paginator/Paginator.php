@@ -56,14 +56,14 @@ class Paginator implements PaginatorInterface
         return $this;
     }
 
-    public function resolveQueryBuilder(QueryBuilder $queryBuilder): void
+    public function paginateQueryBuilder(QueryBuilder $queryBuilder): void
     {
         $queryBuilder
             ->setMaxResults($this->getLimit())
             ->setFirstResult($this->getOffset());
     }
 
-    public function resolveSql(string &$sql): void
+    public function paginateSql(string &$sql): void
     {
         $sql .= " LIMIT {$this->getLimit()} OFFSET {$this->getOffset()}";
     }

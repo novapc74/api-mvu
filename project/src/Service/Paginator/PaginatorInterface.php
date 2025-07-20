@@ -11,6 +11,6 @@ interface PaginatorInterface
     public function getCount(): int;
     public function getLimit(): int;
     public function getOffset(): int;
-    public function resolveQueryBuilder(QueryBuilder $queryBuilder): void;
-    public function resolveSql(string &$sql): void;
+    public function paginateQueryBuilder(QueryBuilder $queryBuilder): void;
+    public function paginateSql(string &$sql): void;
 }

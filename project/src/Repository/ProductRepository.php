@@ -35,7 +35,7 @@ class ProductRepository extends ServiceEntityRepository
                 'p.slug',
             ]);
 
-        $paginator->resolveQueryBuilder($qb);
+        $paginator->paginateQueryBuilder($qb);
 
         return $qb->getQuery()->getResult();
     }
