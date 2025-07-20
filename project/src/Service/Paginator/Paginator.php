@@ -2,13 +2,15 @@
 
 namespace App\Service\Paginator;
 
+use Doctrine\ORM\QueryBuilder;
+
 class Paginator implements PaginatorInterface
 {
     private int $count = 0;
     private array $items = [];
+
     public function __construct(
         private readonly PaginatorRequestDto  $requestDto,
-        private readonly PaginatorResponseDto $responseDto,
     )
     {
     }
@@ -33,17 +35,36 @@ class Paginator implements PaginatorInterface
         return $this->requestDto->getLimit();
     }
 
-    public function paginate(array $collection): array
+    public function getOffset(): int
     {
-        $page = $this->getPage();
-        $limit = $this->getLimit();
-        $offset = ($page - 1) * $limit;
+        return ($this->getPage() - 1) * $this->getLimit();
+    }
 
-        $this->items = array_slice($collection, $offset, $limit);
+    public function paginate(array $collection, ?int $count = null): self
+    {
+        if ($count === null) {
+            $offset = $this->getOffset();
+            $limit = $this->getLimit();
 
-        // Записываем результаты в response DTO
-        $this->count = count($collection);
+            $this->items = array_slice($collection, $offset, $limit);
+            $this->count = count($collection);
+        } else {
+            $this->items = $collection;
+            $this->count = $count;
+        }
 
-        return $this->responseDto::response($this);
+        return $this;
+    }
+
+    public function resolveQueryBuilder(QueryBuilder $queryBuilder): void
+    {
+        $queryBuilder
+            ->setMaxResults($this->getLimit())
+            ->setFirstResult($this->getOffset());
+    }
+
+    public function resolveSql(string &$sql): void
+    {
+        $sql .= " LIMIT {$this->getLimit()} OFFSET {$this->getOffset()}";
     }
 }

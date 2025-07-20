@@ -15,7 +15,7 @@ class PaginatorRequestDto
     )
     {
         $request = $this->requestStack->getCurrentRequest();
-        $this->page = $request->get('page', 1);
+        $this->page = max($request->get('page', 1), 1);
         $this->limit = $request->get('limit', 24);
     }
 

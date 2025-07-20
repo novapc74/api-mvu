@@ -14,14 +14,22 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 final class ProductController extends AbstractController
 {
     #[Route('/products', methods: ['POST'])]
-    public function index(ProductService $service, #[MapRequestPayload(type: ProductIdDto::class)] array $dto): JsonResponse
+    public function create(ProductService $service, #[MapRequestPayload(type: ProductIdDto::class)] array $dto): JsonResponse
     {
-        return new JsonResponse($service->getProducts($dto));
+        return new JsonResponse([]);
     }
 
     #[Route('/product/{slug}', methods: ['GET'])]
     public function show(ProductService $service, Product $product): JsonResponse
     {
         return new JsonResponse($service->getProductPage($product));
+    }
+
+    #[Route('/product', methods: ['GET'])]
+    public function index(
+        ProductService $service
+    ): JsonResponse
+    {
+        return new JsonResponse($service->getProducts());
     }
 }

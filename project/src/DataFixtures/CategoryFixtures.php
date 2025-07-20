@@ -6,7 +6,7 @@ use App\Entity\Category;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 
-class CategoryFixtures extends AppFixtures /* implements DependentFixtureInterface */
+class CategoryFixtures extends AppFixtures implements DependentFixtureInterface
 {
     private const PARENT_CATEGORY_DATA = [
         'Свитшоты',
@@ -14,7 +14,7 @@ class CategoryFixtures extends AppFixtures /* implements DependentFixtureInterfa
         'Худи',
     ];
 
-    protected function loadData(ObjectManager $manager)
+    protected function loadData(ObjectManager $manager): void
     {
         $this->createEntity(Category::class, 3, function (Category $category, $count) {
             $category
@@ -26,6 +26,8 @@ class CategoryFixtures extends AppFixtures /* implements DependentFixtureInterfa
 
     public function getDependencies(): array
     {
-        return [];
+        return [
+            UserFixtures::class
+        ];
     }
 }

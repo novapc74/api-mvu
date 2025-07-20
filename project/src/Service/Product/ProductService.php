@@ -3,20 +3,29 @@
 namespace App\Service\Product;
 
 use App\Entity\Product;
-use App\Model\Product\ProductIdDto;
+use App\Service\Paginator\Paginator;
 use App\Repository\ProductRepository;
+use App\Service\Paginator\PaginatorResponseDto;
 
-class ProductService
+readonly class ProductService
 {
-    public function __construct(private readonly ProductRepository $productRepository)
+    public function __construct(
+        private ProductRepository $productRepository,
+        private Paginator         $paginator,
+    )
     {
     }
 
-    public function getProducts(array $dtoCollection): array
+    public function getProducts(): array
     {
-        #TODO прилетают uuid товаров. Дальше с этим что-то нужно будет сделать :)
-        return array_map(fn(ProductIdDto $dto) => $dto->id->toRfc4122(), $dtoCollection);
+        $count = $this->productRepository->getProductCount();
+        $collection = $this->productRepository->getProducts($this->paginator);
+
+        return PaginatorResponseDto::response(
+            $this->paginator->paginate($collection, $count)
+        );
     }
+
     public function getProductPage(Product $product): array
     {
         return [
@@ -31,5 +40,4 @@ class ProductService
             ],
         ];
     }
-
 }
