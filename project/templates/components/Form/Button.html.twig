@@ -1,4 +1,7 @@
-{% props type = null %}
-<button {% if type %}type="{{ type }} {% endif %}">
+<button {{ attributes.defaults({
+    type:'submitt'
+}) }}>
+
     {% block content %}Клик!{% endblock %}
+
 </button>

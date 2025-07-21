@@ -10,7 +10,7 @@ class Paginator implements PaginatorInterface
     private array $items = [];
 
     public function __construct(
-        private readonly PaginatorRequestDto  $requestDto,
+        private readonly PaginatorRequestDto $requestDto,
     )
     {
     }
@@ -48,10 +48,12 @@ class Paginator implements PaginatorInterface
 
             $this->items = array_slice($collection, $offset, $limit);
             $this->count = count($collection);
-        } else {
-            $this->items = $collection;
-            $this->count = $count;
+
+            return $this;
         }
+
+        $this->items = $collection;
+        $this->count = $count;
 
         return $this;
     }
