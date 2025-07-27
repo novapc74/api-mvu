@@ -2,21 +2,28 @@
 
 namespace App\Service\Paginator;
 
+use Symfony\Component\HttpFoundation\Request;
 
-use Symfony\Component\HttpFoundation\RequestStack;
-
-class PaginatorRequestDto
+readonly class PaginatorRequestDto
 {
-    private int $page;
-    private int $limit;
+    private const LIMIT_PER_PAGE = 24;
 
     public function __construct(
-        private readonly RequestStack $requestStack,
+        private int $page,
+        private int $limit,
     )
     {
-        $request = $this->requestStack->getCurrentRequest();
-        $this->page = max($request->get('page', 1), 1);
-        $this->limit = $request->get('limit', 24);
+    }
+
+    public static function fromRequest(Request $request): self
+    {
+        $pageFromRequest = $request->get('page', 1);
+        $page = max($pageFromRequest, 1);
+
+        $limitFromRequest = $request->get('limit', self::LIMIT_PER_PAGE);
+        $limit = min(max($limitFromRequest, 1), 48);
+
+        return new self($page, $limit);
     }
 
     public function getPage(): int

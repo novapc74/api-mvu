@@ -3,16 +3,23 @@
 namespace App\Service\Paginator;
 
 use Doctrine\ORM\QueryBuilder;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class Paginator implements PaginatorInterface
 {
     private int $count = 0;
     private array $items = [];
 
-    public function __construct(
-        private readonly PaginatorRequestDto $requestDto,
-    )
+    private PaginatorRequestDto $requestDto;
+
+    /**
+     * @param RequestStack $requestStack
+     */
+    public function __construct(private readonly RequestStack $requestStack)
     {
+        $this->requestDto = PaginatorRequestDto::fromRequest(
+            $this->requestStack->getCurrentRequest()
+        );
     }
 
     public function getPage(): int
@@ -38,6 +45,11 @@ class Paginator implements PaginatorInterface
     public function getOffset(): int
     {
         return ($this->getPage() - 1) * $this->getLimit();
+    }
+
+    public function getPagesCount(): int
+    {
+        return ceil($this->getCount() / $this->getLimit());
     }
 
     public function paginate(array $collection, ?int $count = null): self

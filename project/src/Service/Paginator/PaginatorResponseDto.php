@@ -12,6 +12,7 @@ class PaginatorResponseDto
             'limit' => $paginator->getLimit(),
             'count' => $paginator->getCount(),
             'items' => $paginator->getItems(),
+            'pagesCount' => $paginator->getPagesCount(),
         ];
     }
 }
