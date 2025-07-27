@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\Cart\CartRequestService;
+namespace App\Service\Cart;
 
 use App\Service\Crypto\Cryptography;
 

@@ -13,12 +13,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 #[Route('/api')]
 final class ProductController extends AbstractController
 {
-    #[Route('/products', methods: ['POST'])]
-    public function create(ProductService $service, #[MapRequestPayload(type: ProductIdDto::class)] array $dto): JsonResponse
-    {
-        return new JsonResponse([]);
-    }
-
     #[Route('/product/{slug}', methods: ['GET'])]
     public function show(ProductService $service, Product $product): JsonResponse
     {

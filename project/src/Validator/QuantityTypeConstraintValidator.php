@@ -7,11 +7,12 @@ use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 /**
- * "type" и "quantity" не могут приходить одновременно.
+ * Должны присутствовать либо "type" либо "quantity".
+ * Одновременно присутствовать не могут.
  */
 class QuantityTypeConstraintValidator extends ConstraintValidator
 {
-    public function validate($value, Constraint $constraint)
+    public function validate($value, Constraint $constraint): void
     {
         if (!$constraint instanceof QuantityTypeConstraint) {
             throw new UnexpectedTypeException($constraint, QuantityTypeConstraint::class);
@@ -24,7 +25,7 @@ class QuantityTypeConstraintValidator extends ConstraintValidator
                 ->addViolation();
         }
 
-        if(!$object->type && !$object->quantity) {
+        if (!$object->type && !$object->quantity) {
             $this->context->buildViolation($constraint->message)
                 ->addViolation();
         }

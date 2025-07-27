@@ -7,7 +7,7 @@ use App\Validator\QuantityTypeConstraint;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[QuantityTypeConstraint]
-readonly class CartItemTypeDto
+readonly class CartItemDto
 {
     private const AVAILABLE_TYPE = [
         'inc', 'dec', 'del'

@@ -11,6 +11,6 @@ class QuantityTypeConstraint extends Constraint
     public string $message = 'Должно присутствовать либо “type” либо “quantity”';
     public function getTargets(): array|string
     {
-        return self::CLASS_CONSTRAINT; // Specify that this constraint is for classes
+        return self::CLASS_CONSTRAINT;
     }
 }

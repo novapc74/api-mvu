@@ -24,6 +24,6 @@ services:
         tags:
             - { name: kernel.event_listener, event: kernel.exception }
 
-    App\Service\Cart\CartService:
+    App\Service\Cart\CartHash:
         arguments:
             $cartSalt: '%app.cart.salt%'

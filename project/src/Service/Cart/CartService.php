@@ -5,10 +5,9 @@ namespace App\Service\Cart;
 use App\Entity\Cart;
 use App\Entity\Product;
 use App\Entity\CartItem;
+use App\Model\Cart\CartItemDto;
 use Symfony\Component\Uid\Uuid;
-use App\Trait\CryptographyTrait;
 use App\Exception\CustomException;
-use App\Model\Cart\CartItemTypeDto;
 use App\Repository\CartItemRepository;
 use Symfony\Component\Lock\LockFactory;
 use Doctrine\ORM\EntityManagerInterface;
@@ -18,14 +17,18 @@ use Symfony\Component\HttpFoundation\Response;
 
 readonly class CartService
 {
-    use CryptographyTrait;
+    private const TYPE_INCREMENT = 'inc';
+    private const TYPE_DECREMENT = 'dec';
+    private const TYPE_DELETE = 'del';
 
     private const CART_LOCK_PREFIX = 'cart_lock_';
     private const CART_HASH_TTL = 600;
 
-    public function __construct(private EntityManagerInterface $entityManager,
-                                private LockFactory            $lockFactory,
-                                private string                 $cartSalt)
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private LockFactory            $lockFactory,
+        private CartHash               $hasher,
+    )
     {
     }
 
@@ -56,18 +59,20 @@ readonly class CartService
      * @throws CustomException
      * @throws ORMException
      */
-    public function updateCart(CartItemTypeDto $cartItemDto): array
+    public function updateCart(CartItemDto $dto): array
     {
-        return $this->withCartLock($cartItemDto->cartHash, function () use ($cartItemDto) {
+        return $this->withCartLock($dto->cartHash, function () use ($dto) {
 
-            $cart = $this->findCartByHash($cartItemDto->cartHash);
+            if (!$cart = $this->findCartByHash($dto->cartHash)) {
+                return $this->toArray(null);
+            }
 
             $cartId = $cart->getId()->toRfc4122();
-            $productId = $cartItemDto->productId->toRfc4122();
+            $productId = $dto->productId->toRfc4122();
             $cartItem = $this->findCartItemByCartIdAndProductId($cartId, $productId);
 
             /** нет $cartItem + хотим уменьшить или удалить */
-            if (!$cartItem && in_array($cartItemDto->type, ['dec', 'del'])) {
+            if (!$cartItem && in_array($dto->type, [self::TYPE_DECREMENT, self::TYPE_DELETE], true)) {
                 return $this->toArray($cart);
             }
 
@@ -84,7 +89,7 @@ readonly class CartService
                 $this->entityManager->persist($cartItem);
             }
 
-            $this->resolveCartItem($cartItem, $cartItemDto);
+            $this->resolveCartItem($cartItem, $dto);
 
             $this->entityManager->flush();
 
@@ -92,12 +97,16 @@ readonly class CartService
         });
     }
 
-    private function resolveCartItem(CartItem $cartItem, CartItemTypeDto $dto): void
+    /**
+     * @param CartItem $cartItem
+     * @param CartItemDto $dto
+     */
+    private function resolveCartItem(CartItem $cartItem, CartItemDto $dto): void
     {
         match ($dto->type) {
-            'inc' => self::incrementCartItem($cartItem),
-            'dec' => self::decrementCartItem($cartItem),
-            'del' => self::deleteCartItem($cartItem),
+            self::TYPE_INCREMENT => self::incrementCartItem($cartItem),
+            self::TYPE_DECREMENT => self::decrementCartItem($cartItem),
+            self::TYPE_DELETE => self::deleteCartItem($cartItem),
             default => self::overrideCartItem($cartItem, $dto->quantity)
         };
     }
@@ -137,17 +146,29 @@ readonly class CartService
     public function deleteCart(string $hash): void
     {
         $this->withCartLock($hash, function () use ($hash) {
-            $cart = $this->findCartByHash($hash);
+
+            if (!$cart = $this->findCartByHash($hash)) {
+                return;
+            }
 
             $this->entityManager->remove($cart);
             $this->entityManager->flush();
         });
     }
 
-    private function toArray(Cart $cart): array
+    private function toArray(?Cart $cart): array
     {
+        #TODO возможно, лучше выбросить Exception...
+        if (null === $cart) {
+            return [
+                'success' => false,
+                'message' => 'Корзина не найдена.'
+            ];
+        }
+
         $cartId = $cart->getId()->toRfc4122();
-        $cartHash = self::encodeHash($this->cartSalt, $cartId);
+        $cartHash = $this->hasher->encodeHash($cartId);
+
 
         return [
             'success' => true,
@@ -168,7 +189,7 @@ readonly class CartService
      */
     private function findCartByHash(string $hash): Cart
     {
-        $cartId = self::decodeHash($this->cartSalt, $hash);
+        $cartId = $this->hasher->decodeHash($hash);
 
         if (!Uuid::isValid($cartId)) {
             throw new CustomException(sprintf('Невалидный hash: "%s".', $hash), 422);

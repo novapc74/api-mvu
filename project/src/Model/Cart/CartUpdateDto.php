@@ -7,7 +7,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class CartUpdateDto
 {
     /**
-     * @param CartItemTypeDto[] $cartItems
+     * @param CartItemDto[] $cartItems
      */
     public function __construct(
 
@@ -15,7 +15,7 @@ class CartUpdateDto
         #[Assert\Length(max: 255)]
         public string $hash,
         /**
-         * @var CartItemTypeDto[]
+         * @var CartItemDto[]
          */
         #[Assert\Valid]
         public readonly array $cartItems = [],
