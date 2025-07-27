@@ -22,7 +22,7 @@ readonly class CartService
     private const TYPE_DELETE = 'del';
 
     private const CART_LOCK_PREFIX = 'cart_lock_';
-    private const CART_HASH_TTL = 600;
+    private const CART_HASH_TTL = 10;
 
     public function __construct(
         private EntityManagerInterface $entityManager,
@@ -215,7 +215,7 @@ readonly class CartService
      */
     private function withCartLock(string $cartHash, callable $callback): mixed
     {
-        $lock = $this->lockFactory->createLock(self::CART_LOCK_PREFIX . $cartHash, 30);
+        $lock = $this->lockFactory->createLock(self::CART_LOCK_PREFIX . $cartHash, self::CART_HASH_TTL);
 
         if (!$lock->acquire()) {
             throw new CustomException('Не удалось получить блокировку корзины', Response::HTTP_CONFLICT);
