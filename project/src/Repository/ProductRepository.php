@@ -29,11 +29,12 @@ class ProductRepository extends ServiceEntityRepository
     public function getProducts(Paginator $paginator): array
     {
         $qb = $this->createQueryBuilder('p')
-            ->select([
-                'p.id',
-                'p.name',
-                'p.slug',
-            ]);
+//            ->select([
+//                'p.id',
+//                'p.name',
+//                'p.slug',
+//            ])
+        ;
 
         $paginator->paginateQueryBuilder($qb);
 
