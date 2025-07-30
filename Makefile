@@ -32,3 +32,12 @@ dev-update:
 
 yarn-watch:
 	docker compose --env-file ./project/.env.local run --rm node-cli yarn watch
+
+yarn-dev:
+	docker compose --env-file ./project/.env.local run --rm node-cli yarn encore dev
+
+yarn-install:
+	docker compose --env-file ./project/.env.local run --rm node-cli yarn install --force
+
+yarn-add:
+	docker compose --env-file ./project/.env.local run --rm node-cli yarn add ...

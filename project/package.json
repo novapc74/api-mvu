@@ -2,7 +2,7 @@
     "devDependencies": {
         "@babel/core": "^7.17.0",
         "@babel/preset-env": "^7.16.0",
-        "@hotwired/stimulus": "^3.0.0",
+        "@hotwired/stimulus": "^3.2.2",
         "@symfony/stimulus-bridge": "^3.2.0 || ^4.0.0",
         "@symfony/webpack-encore": "^5.0.0",
         "core-js": "^3.38.0",
@@ -17,5 +17,8 @@
         "dev": "encore dev",
         "watch": "encore dev --watch",
         "build": "encore production --progress"
+    },
+    "dependencies": {
+        "stimulus-use": "^0.52.3"
     }
 }
