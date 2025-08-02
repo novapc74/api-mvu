@@ -22,14 +22,29 @@ readonly class CartService
     private const TYPE_DELETE = 'del';
 
     private const CART_LOCK_PREFIX = 'cart_lock_';
-    private const CART_HASH_TTL = 10;
+    private const CART_HASH_TTL = 30;
 
     public function __construct(
         private EntityManagerInterface $entityManager,
         private LockFactory            $lockFactory,
         private CartHash               $hasher,
+        private CartSession            $cartSession,
     )
     {
+    }
+
+    /**
+     * @throws OptimisticLockException
+     * @throws CustomException
+     * @throws ORMException
+     */
+    public function getCartFromSession(): array
+    {
+        if (!$cartHash = $this->cartSession->getCartHashFromSession()) {
+            throw new CustomException('Корзина утеряна.', 422);
+        }
+
+        return $this->getCart($cartHash);
     }
 
     /**
@@ -51,6 +66,10 @@ readonly class CartService
         $this->entityManager->persist($cart);
         $this->entityManager->flush();
 
+        $cartHash = $this->getCartHash($cart);
+
+        $this->cartSession->setCartHashToSession($cartHash);
+
         return $this->toArray($cart);
     }
 
@@ -64,7 +83,7 @@ readonly class CartService
         return $this->withCartLock($dto->cartHash, function () use ($dto) {
 
             if (!$cart = $this->findCartByHash($dto->cartHash)) {
-                return $this->toArray(null);
+                throw new CustomException('Корзина не найдена.', 404);
             }
 
             $cartId = $cart->getId()->toRfc4122();
@@ -73,13 +92,13 @@ readonly class CartService
 
             /** нет $cartItem + хотим уменьшить или удалить */
             if (!$cartItem && in_array($dto->type, [self::TYPE_DECREMENT, self::TYPE_DELETE], true)) {
-                return $this->toArray($cart);
+                throw new CustomException('Операция не применима для товара не из корзины.', 422);
             }
 
             if (!$cartItem) {
 
                 if (!$product = $this->entityManager->getRepository(Product::class)->find($productId)) {
-                    return $this->toArray($cart);
+                    throw new CustomException('Продукт не найден.', 422);
                 }
 
                 $cartItem = (new CartItem())
@@ -90,6 +109,13 @@ readonly class CartService
             }
 
             $this->resolveCartItem($cartItem, $dto);
+
+            if (0 === $cart->getCartItems()->count()) {
+                $this->entityManager->remove($cart);
+                $this->entityManager->flush();
+
+                throw new CustomException('Удалена пустая корзина.', 404);
+            }
 
             $this->entityManager->flush();
 
@@ -156,30 +182,24 @@ readonly class CartService
         });
     }
 
-    private function toArray(?Cart $cart): array
+    private function toArray(Cart $cart): array
     {
-        #TODO возможно, лучше выбросить Exception...
-        if (null === $cart) {
-            return [
-                'success' => false,
-                'message' => 'Корзина не найдена.'
-            ];
-        }
-
-        $cartId = $cart->getId()->toRfc4122();
-        $cartHash = $this->hasher->encodeHash($cartId);
-
-
         return [
-            'success' => true,
             'cart' => [
-                'cart_hash' => $cartHash,
+                'cart_hash' => $this->getCartHash($cart),
                 'cart_items' => $cart->getCartItems()->map(fn(CartItem $cartItem) => [
                     'productId' => $cartItem->getProduct()->getId()->toRfc4122(),
                     'quantity' => $cartItem->getQuantity()
                 ])->toArray(),
             ]
         ];
+    }
+
+    private function getCartHash(Cart $cart): string
+    {
+        return $this->hasher->encodeHash(
+            $cart->getId()->toRfc4122()
+        );
     }
 
     /**
@@ -217,14 +237,26 @@ readonly class CartService
     {
         $lock = $this->lockFactory->createLock(self::CART_LOCK_PREFIX . $cartHash, self::CART_HASH_TTL);
 
-        if (!$lock->acquire()) {
-            throw new CustomException('Не удалось получить блокировку корзины', Response::HTTP_CONFLICT);
-        }
+        $maxAttempts = 5;
+        $attempt = 0;
+        $waitMicroseconds = 100_000; // 100 ms
 
-        try {
-            return $callback();
-        } finally {
-            $lock->release();
-        }
+        do {
+            $attempt++;
+            if ($lock->acquire()) {
+                try {
+                    $result = $callback();
+                } finally {
+                    $lock->release();
+                }
+                return $result;
+            }
+
+            usleep($waitMicroseconds);
+
+        } while ($attempt < $maxAttempts);
+
+        $errorMessage = sprintf('Не удалось получить блокировку корзины после %d попыток', $maxAttempts);
+        throw new CustomException($errorMessage, Response::HTTP_CONFLICT);
     }
 }

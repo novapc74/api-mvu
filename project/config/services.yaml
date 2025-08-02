@@ -27,3 +27,7 @@ services:
     App\Service\Cart\CartHash:
         arguments:
             $cartSalt: '%app.cart.salt%'
+
+    App\Middleware\CartFetchRequestValidatorMiddleware:
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, priority: 100 }

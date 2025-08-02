@@ -10,11 +10,6 @@ readonly class CartHash
     {
     }
 
-    public static function init(string $cartSalt): CartHash
-    {
-        return new self($cartSalt);
-    }
-
     public function encodeHash(string $hash): string
     {
         return Cryptography::encrypt($this->cartSalt, $hash);
