@@ -14,7 +14,6 @@ readonly final class CartFetchRequestValidatorMiddleware
 
     public function __invoke(RequestEvent $event): void
     {
-        return;
         $request = $event->getRequest();
 
         $route = $request->attributes->get('_route');

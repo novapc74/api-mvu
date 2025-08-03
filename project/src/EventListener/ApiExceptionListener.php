@@ -13,8 +13,6 @@ class ApiExceptionListener
     public function onKernelException(ExceptionEvent $event): void
     {
         $request = $event->getRequest();
-
-        // Получаем строку контроллера, например: "App\Controller\CartController::someMethod"
         $controller = $request->attributes->get('_controller');
 
         if (!is_string($controller) || !str_starts_with($controller, 'App\Controller\CartController')) {
