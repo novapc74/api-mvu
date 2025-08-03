@@ -2,10 +2,9 @@
 
 namespace App\Controller;
 
-use App\Exception\CustomException;
-use Exception;
 use App\Model\Cart\CartItemDto;
 use App\Service\Cart\CartService;
+use App\Exception\CustomException;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
 use Symfony\Component\Routing\Attribute\Route;
@@ -37,62 +36,49 @@ final class CartController extends AbstractController
     }
 
     /**
+     * @throws OptimisticLockException
+     * @throws CustomException
      * @throws ORMException
      */
     #[Route('/cart/{hash}', name: 'cart_by_hash', methods: ['GET'])]
     public function getCart(string $hash): JsonResponse
     {
-        try {
-            $responseData = $this->cartService->getCart($hash);
-        } catch (Exception $error) {
-            $responseData = $error;
-        }
-
-        return ApiResponseFactory::responseHelper($responseData);
+        return ApiResponseFactory::responseHelper(
+            $this->cartService->getCart($hash)
+        );
     }
 
     #[Route('/cart', name: 'cart_new', methods: ['POST'])]
     public function createCart(): JsonResponse
     {
-        try {
-            $responseData = $this->cartService->createCart();
-        } catch (Exception $exception) {
-            $responseData = $exception;
-        }
-
-        return ApiResponseFactory::responseHelper($responseData);
+        return ApiResponseFactory::responseHelper(
+            $this->cartService->createCart()
+        );
     }
 
     /**
      * @throws OptimisticLockException
+     * @throws CustomException
      * @throws ORMException
      */
     #[Route('/cart', name: 'cart_update', methods: ['PUT'])]
     public function updateCart(#[MapRequestPayload] CartItemDto $cartItemDto): JsonResponse
     {
-        try {
-            $responseData = $this->cartService->updateCart($cartItemDto);
-        } catch (Exception $exception) {
-            $responseData = $exception;
-        }
-
-        return ApiResponseFactory::responseHelper($responseData);
+        return ApiResponseFactory::responseHelper(
+            $this->cartService->updateCart($cartItemDto)
+        );
     }
 
     /**
      * @throws OptimisticLockException
+     * @throws CustomException
      * @throws ORMException
      */
     #[Route('/cart/{hash}', name: 'cart_delete', methods: ['DELETE'])]
     public function deleteCart(string $hash): JsonResponse
     {
-        try {
-            $this->cartService->deleteCart($hash);
-            $responseData = [];
-        } catch (Exception $exception) {
-            $responseData = $exception;
-        }
+        $this->cartService->deleteCart($hash);
 
-        return ApiResponseFactory::responseHelper($responseData);
+        return ApiResponseFactory::responseHelper([]);
     }
 }

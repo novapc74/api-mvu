@@ -4,6 +4,7 @@ namespace App\Service\ApiResponse;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Throwable;
 
 final readonly class ApiResponseFactory
@@ -16,7 +17,7 @@ final readonly class ApiResponseFactory
      */
     public static function successResponse(array $data): string
     {
-        $data =  [
+        $data = [
             'success' => true,
             'data' => $data,
         ];
@@ -51,6 +52,7 @@ final readonly class ApiResponseFactory
     public static function responseHelper(Throwable|array $data): JsonResponse
     {
         if ($data instanceof Throwable) {
+
             return new JsonResponse(
                 self::errorResponse($data),
                 $data->getCode() ?: Response::HTTP_BAD_REQUEST,

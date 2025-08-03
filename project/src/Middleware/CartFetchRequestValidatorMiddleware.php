@@ -2,8 +2,8 @@
 
 namespace App\Middleware;
 
+use App\Exception\CustomException;
 use App\Service\ApiResponse\FetchRequestValidator;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 
 readonly final class CartFetchRequestValidatorMiddleware
@@ -12,6 +12,9 @@ readonly final class CartFetchRequestValidatorMiddleware
     {
     }
 
+    /**
+     * @throws CustomException
+     */
     public function __invoke(RequestEvent $event): void
     {
         $request = $event->getRequest();
@@ -22,9 +25,6 @@ readonly final class CartFetchRequestValidatorMiddleware
             return;
         }
 
-        $validationResponse = $this->fetchRequestValidator->validateFetchRequest($request);
-        if ($validationResponse instanceof JsonResponse) {
-            $event->setResponse($validationResponse);
-        }
+        $this->fetchRequestValidator->validateFetchRequest($request);
     }
 }

@@ -2,11 +2,8 @@
 
 namespace App\EventListener;
 
-use Symfony\Component\HttpFoundation\Response;
 use App\Service\ApiResponse\ApiResponseFactory;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
-use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 class ApiExceptionListener
 {
@@ -21,12 +18,7 @@ class ApiExceptionListener
 
         $exception = $event->getThrowable();
 
-        $response = new JsonResponse(
-            ApiResponseFactory::errorResponse($exception),
-            $exception instanceof HttpExceptionInterface ? $exception->getStatusCode() : Response::HTTP_BAD_REQUEST,
-            [],
-            true
-        );
+        $response = ApiResponseFactory::responseHelper($exception);
 
         $event->setResponse($response);
     }
