@@ -2,10 +2,10 @@
 
 namespace App\Controller;
 
+use App\Exception\CustomException;
 use Exception;
 use App\Model\Cart\CartItemDto;
 use App\Service\Cart\CartService;
-use App\Exception\CustomException;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
 use Symfony\Component\Routing\Attribute\Route;
@@ -25,24 +25,21 @@ final class CartController extends AbstractController
 
     /**
      * @throws OptimisticLockException
+     * @throws CustomException
      * @throws ORMException
      */
     #[Route('/cart', name: 'cart_from_session', methods: ['GET'])]
     public function getCartFromSession(): JsonResponse
     {
-        try {
-            $responseData = $this->cartService->getCartFromSession();
-        } catch (Exception $exception) {
-            $responseData = $exception;
-        }
-
-        return ApiResponseFactory::responseHelper($responseData);
+        return ApiResponseFactory::responseHelper(
+            $this->cartService->getCartFromSession()
+        );
     }
 
     /**
      * @throws ORMException
      */
-    #[Route('/cart/{hash}', methods: ['GET'])]
+    #[Route('/cart/{hash}', name: 'cart_by_hash', methods: ['GET'])]
     public function getCart(string $hash): JsonResponse
     {
         try {
@@ -54,7 +51,7 @@ final class CartController extends AbstractController
         return ApiResponseFactory::responseHelper($responseData);
     }
 
-    #[Route('/cart', methods: ['POST'])]
+    #[Route('/cart', name: 'cart_new', methods: ['POST'])]
     public function createCart(): JsonResponse
     {
         try {
@@ -70,7 +67,7 @@ final class CartController extends AbstractController
      * @throws OptimisticLockException
      * @throws ORMException
      */
-    #[Route('/cart', methods: ['PUT'])]
+    #[Route('/cart', name: 'cart_update', methods: ['PUT'])]
     public function updateCart(#[MapRequestPayload] CartItemDto $cartItemDto): JsonResponse
     {
         try {
@@ -86,7 +83,7 @@ final class CartController extends AbstractController
      * @throws OptimisticLockException
      * @throws ORMException
      */
-    #[Route('/cart/{hash}', methods: ['DELETE'])]
+    #[Route('/cart/{hash}', name: 'cart_delete', methods: ['DELETE'])]
     public function deleteCart(string $hash): JsonResponse
     {
         try {
