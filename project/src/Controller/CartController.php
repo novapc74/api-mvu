@@ -9,7 +9,6 @@ use App\Exception\CustomException;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\HttpFoundation\Response;
 use App\Service\ApiResponse\ApiResponseFactory;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
@@ -19,7 +18,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 final class CartController extends AbstractController
 {
     public function __construct(
-        private readonly CartService           $cartService,
+        private readonly CartService $cartService,
     )
     {
     }
@@ -28,19 +27,16 @@ final class CartController extends AbstractController
      * @throws OptimisticLockException
      * @throws ORMException
      */
-    #[Route('/cart', methods: ['GET'])]
+    #[Route('/cart', name: 'cart_from_session', methods: ['GET'])]
     public function getCartFromSession(): JsonResponse
     {
         try {
-            return new JsonResponse(
-                ApiResponseFactory::successResponse($this->cartService->getCartFromSession())
-            );
-        } catch (CustomException $exception) {
-            return new JsonResponse(
-                ApiResponseFactory::errorResponse($exception),
-                $exception->getCode() ?: Response::HTTP_BAD_REQUEST
-            );
+            $responseData = $this->cartService->getCartFromSession();
+        } catch (Exception $exception) {
+            $responseData = $exception;
         }
+
+        return ApiResponseFactory::responseHelper($responseData);
     }
 
     /**
@@ -50,29 +46,24 @@ final class CartController extends AbstractController
     public function getCart(string $hash): JsonResponse
     {
         try {
-            return new JsonResponse(
-                ApiResponseFactory::successResponse($this->cartService->getCart($hash))
-            );
+            $responseData = $this->cartService->getCart($hash);
         } catch (Exception $error) {
-            return new JsonResponse(
-                ApiResponseFactory::errorResponse($error),
-                $error->getCode() ?: Response::HTTP_BAD_REQUEST);
+            $responseData = $error;
         }
+
+        return ApiResponseFactory::responseHelper($responseData);
     }
 
     #[Route('/cart', methods: ['POST'])]
     public function createCart(): JsonResponse
     {
         try {
-            return new JsonResponse(
-                ApiResponseFactory::successResponse($this->cartService->createCart())
-            );
+            $responseData = $this->cartService->createCart();
         } catch (Exception $exception) {
-            return new JsonResponse(
-                ApiResponseFactory::errorResponse($exception),
-                $exception->getCode() ?: Response::HTTP_BAD_REQUEST
-            );
+            $responseData = $exception;
         }
+
+        return ApiResponseFactory::responseHelper($responseData);
     }
 
     /**
@@ -83,17 +74,12 @@ final class CartController extends AbstractController
     public function updateCart(#[MapRequestPayload] CartItemDto $cartItemDto): JsonResponse
     {
         try {
-            return new JsonResponse(
-                ApiResponseFactory::successResponse(
-                    $this->cartService->updateCart($cartItemDto)
-                )
-            );
-        } catch (CustomException $exception) {
-            return new JsonResponse(
-                ApiResponseFactory::errorResponse($exception),
-                $exception->getCode() ?: Response::HTTP_BAD_REQUEST
-            );
+            $responseData = $this->cartService->updateCart($cartItemDto);
+        } catch (Exception $exception) {
+            $responseData = $exception;
         }
+
+        return ApiResponseFactory::responseHelper($responseData);
     }
 
     /**
@@ -105,12 +91,11 @@ final class CartController extends AbstractController
     {
         try {
             $this->cartService->deleteCart($hash);
-
-            return new JsonResponse(null, Response::HTTP_NO_CONTENT);
-        } catch (CustomException $exception) {
-            return new JsonResponse(
-                ApiResponseFactory::errorResponse($exception),
-                $exception->getCode() ?: Response::HTTP_BAD_REQUEST);
+            $responseData = [];
+        } catch (Exception $exception) {
+            $responseData = $exception;
         }
+
+        return ApiResponseFactory::responseHelper($responseData);
     }
 }

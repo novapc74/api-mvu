@@ -17,7 +17,8 @@ readonly final class CartFetchRequestValidatorMiddleware
         $request = $event->getRequest();
 
         $route = $request->attributes->get('_route');
-        if (!$route || !str_starts_with($route, 'api/cart')) {
+
+        if (!$route || !str_starts_with($route, 'cart')) {
             return;
         }
 

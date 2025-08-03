@@ -30,4 +30,4 @@ services:
 
     App\Middleware\CartFetchRequestValidatorMiddleware:
         tags:
-            - { name: kernel.event_listener, event: kernel.request, priority: 100 }
+            - { name: kernel.event_listener, event: kernel.request }
