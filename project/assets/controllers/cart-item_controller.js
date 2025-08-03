@@ -1,15 +1,39 @@
 import {Controller} from '@hotwired/stimulus';
-import { useClickOutside } from 'stimulus-use';
 
 /* stimulusFetch: 'lazy' */
 export default class extends Controller {
-    connect() {
-        useClickOutside(this);
-        this.element.textContent = 'Привет! ЭТО КОНТРОЛЛЕР КОРЗИНЫ';
-    }
-    clickOutside(event) {
-        console.log('Клик вне окна!');
-        // здесь ваш код при клике вне
+    static values = {
+        csrfToken: String,
     }
 
+    connect() {
+        console.log('Controller connected, CSRF token:', this.csrfTokenValue);
+    }
+
+    // Метод, вызываемый по клику
+    getCartFromRequest(event) {
+        event.preventDefault(); // если клик по ссылке или кнопке, отменяем дефолтное действие
+
+        fetch('/api/cart', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-Token': this.csrfTokenValue,
+            },
+            body: JSON.stringify({ /* ваши данные */ }),
+            credentials: 'same-origin',
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Success:', data);
+                } else {
+                    alert(data.error.message);
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка запроса:', error);
+            });
+    }
 }

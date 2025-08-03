@@ -1,5 +1,13 @@
 {# @var product \App\Entity\Product #}
-<div style="margin-bottom: 10px">
+<div style="margin-bottom: 10px" {{ stimulus_controller('cart-item', {
+    csrfToken: csrf_token('cart_csrf_token')
+}) }}>
+
     <span>➖</span> Name: {{ product.name }} <span>➕</span>
+
+    <button type="button" data-action="click->cart-item#getCartFromRequest">
+        Создать корзину
+    </button>
+
 </div>
 
