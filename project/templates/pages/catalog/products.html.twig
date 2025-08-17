@@ -2,6 +2,10 @@
 
 {% block body %}
 
+    <div style="margin: 10px;">
+        <a href="{{ path('app_home') }}">⬅ Главная</a>
+    </div>
+
     {% for item in data.items %}
         <div>
             {% include 'pages/catalog/card_product.html.twig' with {
@@ -9,5 +13,9 @@
             } %}
         </div>
     {% endfor %}
+
+    <div style="margin: 10px;">
+        <a href="{{ path('app_cart') }}">Корзина 🛒</a>
+    </div>
 
 {% endblock %}

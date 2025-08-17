@@ -17,7 +17,7 @@ final class ProductController extends AbstractController
         return new JsonResponse($service->getProductPage($product));
     }
 
-    #[Route('/product', methods: ['GET'])]
+    #[Route('/product', name: 'app_catalog', methods: ['GET'])]
     public function index(ProductService $service): Response
     {
 

@@ -10,8 +10,7 @@ export default class extends Controller {
         console.log('Controller connected, CSRF token:', this.csrfTokenValue);
     }
 
-    // Метод, вызываемый по клику
-    getCartFromRequest(event) {
+    setCartToCookie(event) {
         event.preventDefault(); // если клик по ссылке или кнопке, отменяем дефолтное действие
 
         fetch('/api/cart', {
@@ -21,8 +20,8 @@ export default class extends Controller {
                 'X-Requested-With': 'XMLHttpRequest',
                 'X-CSRF-Token': this.csrfTokenValue,
             },
-            body: JSON.stringify({ /* ваши данные */ }),
-            credentials: 'same-origin',
+            // body: JSON.stringify({ /* ваши данные */ }),
+            // credentials: 'same-origin',
         })
             .then(response => response.json())
             .then(data => {
@@ -35,5 +34,19 @@ export default class extends Controller {
             .catch(error => {
                 console.error('Ошибка запроса:', error);
             });
+    }
+
+    addProductToCart(event) {
+        event.preventDefault(); // если клик по ссылке или кнопке, отменяем дефолтное действие
+
+        fetch('/api/cart', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-Token': this.csrfTokenValue,
+            },
+            body: JSON.stringify()
+        })
     }
 }

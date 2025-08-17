@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <a href="{{ path('app_home') }}">Домой</a>
+
+    {% if cart is defined %}
+        <h5>{{ cart.id }}</h5>
+        {% for cart_item in cart.cart_items %}
+            <ul>
+                {% include 'pages/cart/cart_Item.html.twig' with cart_item %}
+            </ul>
+        {% endfor %}
+    {% else %}
+        <h5>Корзина пуста</h5>
+    {% endif %}
+
+{% endblock %}
