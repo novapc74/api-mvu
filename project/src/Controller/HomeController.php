@@ -14,7 +14,7 @@ final class HomeController extends AbstractController
         $haystack = ['info', 'success', 'error', 'warning'];
         $randomKey = array_rand($haystack);
 
-        return $this->render('home/index.html.twig', [
+        return $this->render('pages/home/index.html.twig', [
             'type' => $haystack[$randomKey],
             'message' => 'Hello world!'
         ]);
