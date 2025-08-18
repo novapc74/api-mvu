@@ -2,8 +2,10 @@ import {Controller} from '@hotwired/stimulus';
 
 /* stimulusFetch: 'lazy' */
 export default class extends Controller {
+    static targets = ["quantity", "productId", 'type'];
     static values = {
         csrfToken: String,
+        productId: String
     }
 
     connect() {
@@ -36,9 +38,18 @@ export default class extends Controller {
             });
     }
 
-    addProductToCart(event) {
-        event.preventDefault(); // если клик по ссылке или кнопке, отменяем дефолтное действие
+    updateCartProduct(event) {
+        event.preventDefault();
 
+        // Получаем значение из поля ввода
+        const quantity = parseInt(this.quantityTarget.value, 10);
+        const productId = this.productIdValue;
+        const type = event.currentTarget.dataset.type;
+
+        console.log(type);
+
+        // Выполняем логику добавления товара в корзину
+        // Например, отправка запроса на сервер
         fetch('/api/cart', {
             method: 'PUT',
             headers: {
@@ -46,7 +57,18 @@ export default class extends Controller {
                 'X-Requested-With': 'XMLHttpRequest',
                 'X-CSRF-Token': this.csrfTokenValue,
             },
-            body: JSON.stringify()
+            // body: JSON.stringify({productId: productId, quantity: quantity, type: type}
+            body: JSON.stringify({})
         })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Success:', data);
+                } else {
+                    alert(data.error.message);
+                }
+                // this.quantityTarget.value = data.newQuantity; // Предполагаем, что сервер возвращает новое количество
+            })
+            .catch(error => console.error('Ошибка:', error));
     }
 }

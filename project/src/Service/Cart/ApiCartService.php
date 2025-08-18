@@ -50,11 +50,11 @@ final readonly class ApiCartService
      * @throws CustomException
      * @throws ORMException
      */
-    public function updateCart(CartItemDto $dto): array
+    public function updateCart(CartItemDto $dto): Response
     {
-        return $this->withCartLock($dto->cartHash, function () use ($dto) {
+//        return $this->withCartLock($dto->cartHash, function () use ($dto) {
 
-            if (!$cart = $this->findCartByHash($dto->cartHash)) {
+            if (!$cart = $this->cartHelper->getCart()) {
                 #TODO Не выбрасывать исключение, а создавать корзину, и доавлять в нее товар.
                 throw new CustomException('Корзина не найдена.', 404);
             }
@@ -92,8 +92,12 @@ final readonly class ApiCartService
 
             $this->entityManager->flush();
 
-            return $this->toArray($cart);
-        });
+            $response =  new Response();
+            $response->setContent(json_encode(['success' => true]));
+            $response->headers->set('content-type', 'application/json');
+
+            return $response;
+//        });
     }
 
     /**

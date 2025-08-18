@@ -14,10 +14,6 @@ readonly class CartItemDto
     ];
 
     public function __construct(
-        #[Assert\NotBlank(message: 'Hash корзины обязателен')]
-        #[Assert\Length(max: 255)]
-        public string  $cartHash,
-
         #[Assert\Uuid(message: 'Невалидный идентификатор')]
         public Uuid    $productId,
 

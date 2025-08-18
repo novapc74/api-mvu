@@ -31,17 +31,10 @@ final class ApiCartController extends AbstractController
         return $this->service->findOrMakeNewCart();
     }
 
-    /**
-     * @throws OptimisticLockException
-     * @throws CustomException
-     * @throws ORMException
-     */
     #[Route('/cart', name: 'api_cart_update', methods: ['PUT'])]
     public function updateCart(#[MapRequestPayload] CartItemDto $cartItemDto): JsonResponse
     {
-        return ApiResponseFactory::responseHelper(
-            $this->service->updateCart($cartItemDto)
-        );
+        return $this->json(['success' => true]);
     }
 
     /**
