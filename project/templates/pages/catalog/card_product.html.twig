@@ -6,19 +6,22 @@
 
     <span>{{ product.id }}</span>
 
-    <button type="button" data-action="click->cart#updateCartProduct" data-type="dec">
+    <button type="button" data-action="click->cart#decrementCartItem">
         ➖
     </button>
 
-    <input type="number" data-cart-target="quantity" value="1" min="1"/>
+    <input
+        type="number"
+        data-cart-target="quantity"
+        value="0"
+        min="0"
+        data-action="change->cart#handleQuantityChange"
+    />
 
-    <button type="button" data-action="click->cart#updateCartProduct" data-type="inc">
+
+    <button type="button" data-action="click->cart#incrementCartItem">
         ➕
     </button>
-
-    {#    <button type="button" data-action="click->cart#setCartToCookie"> #}
-    {#        Создать корзину #}
-    {#    </button> #}
 
 </div>
 

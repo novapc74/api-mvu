@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Service\Cart\CartService;
-use App\Exception\CustomException;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
 use Symfony\Component\HttpFoundation\Response;
@@ -35,19 +34,14 @@ final class CartController extends AbstractController
 
     /**
      * @throws OptimisticLockException
-     * @throws CustomException
      * @throws ORMException
      */
     #[Route('/cart/{hash}', name: 'api_cart_by_hash', methods: ['GET'])]
     public function getCart(string $hash): JsonResponse
     {
         return ApiResponseFactory::responseHelper(
-            $this->cartService->getCart($hash)
+            $this->service->getCart()
         );
     }
-
-
-
-
 
 }

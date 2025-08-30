@@ -53,7 +53,7 @@ readonly class CartService
             ];
         }
 
-        return $cartItems;
+        return array_values($cartItems);
     }
 
 

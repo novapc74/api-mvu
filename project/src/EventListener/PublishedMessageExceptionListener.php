@@ -17,12 +17,13 @@ class PublishedMessageExceptionListener
             $data = [
                 'success' => false,
                 'error' => [
-                    'message' => $exception->getCustomMessage(),
-                    'code' => $exception->getCustomCode(),
+                    'message' => $exception->message(),
+                    'code' => $exception->code(),
+                    'type' => $exception->type(),
                 ]
             ];
 
-            $response = new JsonResponse($data, $exception->getCustomCode());
+            $response = new JsonResponse($data, $exception->code());
 
             $event->setResponse($response);
         }

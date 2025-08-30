@@ -23,10 +23,6 @@ class CartHelper
     {
     }
 
-    /**
-     * @throws OptimisticLockException
-     * @throws ORMException
-     */
     public function getCart(): ?Cart
     {
         if(!$cartHash = $this->getCartHashFromCookie()) {
@@ -36,23 +32,22 @@ class CartHelper
         return $this->findCartByHash($cartHash);
     }
 
-    /**
-     * @throws OptimisticLockException
-     * @throws ORMException
-     */
     public function setCartToCookie(Response $response): void
     {
         if (!$cartHash = $this->getCartHashFromCookie()) {
             $cart = $this->makeNewCart();
             $cartHash = $this->getCartHash($cart);
+
             $this->setCartHashToCookie($response, $cartHash);
 
+            $this->setDefaultResponse($response);
             return;
         }
 
         if (!$this->findCartByHash($cartHash)) {
             $cart = $this->makeNewCart();
             $cartHash = $this->getCartHash($cart);
+
             $this->setCartHashToCookie($response, $cartHash);
         }
 
@@ -91,10 +86,6 @@ class CartHelper
             ->cookies->get(self::CART_COOKIE_KEY);
     }
 
-    /**
-     * @throws OptimisticLockException
-     * @throws ORMException
-     */
     private function findCartByHash(string $hash): ?Cart
     {
         $cartId = $this->hasher->decodeHash($hash);

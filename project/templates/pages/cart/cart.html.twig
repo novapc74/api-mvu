@@ -6,11 +6,14 @@
 
     {% if cart is defined %}
         <h5>{{ cart.id }}</h5>
-        {% for cart_item in cart.cart_items %}
-            <ul>
-                {% include 'pages/cart/cart_Item.html.twig' with cart_item %}
-            </ul>
-        {% endfor %}
+        <ul>
+            {% for cart_item in cart.cart_items %}
+                <li>
+                    {% include 'pages/cart/cart_Item.html.twig' with {cart_item: cart_item} %}
+                </li>
+            {% endfor %}
+        </ul>
+
     {% else %}
         <h5>Корзина пуста</h5>
     {% endif %}

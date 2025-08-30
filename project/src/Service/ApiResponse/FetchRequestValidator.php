@@ -28,7 +28,7 @@ final readonly class FetchRequestValidator
         }
 
         if (!$this->csrfTokenManager->isTokenValid(new CsrfToken(self::CART_CSRF_TOKEN_NAME, $token))) {
-            throw new CustomException('Неверный CSRF-токен.', Response::HTTP_FORBIDDEN);
+            throw new CustomException(sprintf('Неверный CSRF-токен: %s', $token), Response::HTTP_FORBIDDEN);
         }
 
         if (!$request->isXmlHttpRequest()) {

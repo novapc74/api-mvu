@@ -1,8 +1,7 @@
 import {Controller} from '@hotwired/stimulus';
 
-/* stimulusFetch: 'lazy' */
 export default class extends Controller {
-    static targets = ["quantity", "productId", 'type'];
+    static targets = ["quantity"];
     static values = {
         csrfToken: String,
         productId: String
@@ -12,63 +11,93 @@ export default class extends Controller {
         console.log('Controller connected, CSRF token:', this.csrfTokenValue);
     }
 
-    setCartToCookie(event) {
-        event.preventDefault(); // если клик по ссылке или кнопке, отменяем дефолтное действие
-
-        fetch('/api/cart', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRF-Token': this.csrfTokenValue,
-            },
-            // body: JSON.stringify({ /* ваши данные */ }),
-            // credentials: 'same-origin',
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    console.log('Success:', data);
-                } else {
-                    alert(data.error.message);
-                }
-            })
-            .catch(error => {
-                console.error('Ошибка запроса:', error);
-            });
-    }
-
-    updateCartProduct(event) {
+    // При нажатии "+"
+    async incrementCartItem(event) {
         event.preventDefault();
 
-        // Получаем значение из поля ввода
-        const quantity = parseInt(this.quantityTarget.value, 10);
+        await this.updateCart(1, 'inc');
+    }
+
+    async decrementCartItem(event) {
+        event.preventDefault();
+
+        await this.updateCart(1, 'dec');
+    }
+
+    async handleQuantityChange(event) {
+        event.preventDefault();
+
+        let quantity = parseInt(this.quantityTarget.value, 10);
+        if (isNaN(quantity) || quantity < 1) {
+            alert('Введите корректное количество (от 1 и выше)');
+            this.quantityTarget.value = quantity;
+
+            return;
+        }
+        await this.updateCart(quantity, 'set');
+    }
+
+    // Универсальный метод обновления количества на сервере
+    async updateCart(quantity, type) {
         const productId = this.productIdValue;
-        const type = event.currentTarget.dataset.type;
 
-        console.log(type);
+        try {
+            let response = await fetch('/api/cart/update', {
+                method: 'POST',
+                headers: this.getHeaders(),
+                body: JSON.stringify({productId: productId, quantity: quantity, type: type}),
+            });
 
-        // Выполняем логику добавления товара в корзину
-        // Например, отправка запроса на сервер
-        fetch('/api/cart', {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRF-Token': this.csrfTokenValue,
-            },
-            // body: JSON.stringify({productId: productId, quantity: quantity, type: type}
-            body: JSON.stringify({})
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    console.log('Success:', data);
-                } else {
-                    alert(data.error.message);
-                }
-                // this.quantityTarget.value = data.newQuantity; // Предполагаем, что сервер возвращает новое количество
-            })
-            .catch(error => console.error('Ошибка:', error));
+            let data = await response.json();
+
+            // Если корзина не найдена и тип не на уменьшение - создаем и повторяем
+            if (!data.success && data.error?.code === 404 && data.error?.type === 'cart_not_found' && type !== 'dec') {
+                await this.createCart();
+
+                response = await fetch('/api/cart/update', {
+                    method: 'POST',
+                    headers: this.getHeaders(),
+                    body: JSON.stringify({productId: productId, quantity: quantity, type: type}),
+                });
+
+                data = await response.json();
+            }
+
+            if (data.success) {
+                this.quantityTarget.value = data.data.quantity;
+            } else {
+                console.log(data.error?.message || 'Ошибка обновления корзины')
+            }
+
+        } catch (error) {
+            console.log('Ошибка:', error);
+        }
+    }
+
+    async createCart() {
+        try {
+            const response = await fetch('/api/cart', {
+                method: 'POST',
+                headers: this.getHeaders(),
+            });
+
+            const data = await response.json();
+
+            if (!data.success) {
+                console.log(data.error.message);
+            }
+
+        } catch (error) {
+            console.log('Ошибка создания корзины:', error);
+            throw error;
+        }
+    }
+
+    getHeaders() {
+        return {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-Token': this.csrfTokenValue,
+        };
     }
 }

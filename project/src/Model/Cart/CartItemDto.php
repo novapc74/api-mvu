@@ -3,24 +3,26 @@
 namespace App\Model\Cart;
 
 use Symfony\Component\Uid\Uuid;
-use App\Validator\QuantityTypeConstraint;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[QuantityTypeConstraint]
 readonly class CartItemDto
 {
-    private const AVAILABLE_TYPE = [
-        'inc', 'dec', 'del'
+    private const METHOD_TYPE = [
+        'inc',
+        'dec',
+        'set',
+        'del',
     ];
 
     public function __construct(
-        #[Assert\Uuid(message: 'Невалидный идентификатор')]
-        public Uuid    $productId,
+        #[Assert\Uuid(message: 'Невалидный идентификатор.')]
+        public Uuid   $productId,
 
-        public ?float  $quantity,
+        #[Assert\Positive(message: 'Количество должно быть положительным числом.')]
+        public int    $quantity,
 
-        #[Assert\Choice(choices: self::AVAILABLE_TYPE, message: 'Невалидный тип операции.')]
-        public ?string $type,
+        #[Assert\Choice(choices: self::METHOD_TYPE)]
+        public string $type,
     )
     {
     }

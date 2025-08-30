@@ -6,13 +6,16 @@
         <a href="{{ path('app_home') }}">⬅ Главная</a>
     </div>
 
-    {% for item in data.items %}
-        <div>
-            {% include 'pages/catalog/card_product.html.twig' with {
-                product:item
-            } %}
-        </div>
-    {% endfor %}
+    <ul>
+        {% for item in data.items %}
+            <li>
+                {% include 'pages/catalog/card_product.html.twig' with {
+                    product:item
+                } %}
+            </li>
+        {% endfor %}
+    </ul>
+
 
     <div style="margin: 10px;">
         <a href="{{ path('app_cart') }}">Корзина 🛒</a>

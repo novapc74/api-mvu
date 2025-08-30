@@ -4,7 +4,11 @@ namespace App\Exception;
 
 final readonly class CustomExceptionDataDto
 {
-    public function __construct(private string $message, private int $code)
+    public function __construct(
+        private string $message,
+        private string $type,
+        private int    $code
+    )
     {
     }
 
@@ -16,5 +20,10 @@ final readonly class CustomExceptionDataDto
     public function getMessage(): string
     {
         return $this->message;
+    }
+
+    public function getType(): string
+    {
+        return $this->type;
     }
 }
