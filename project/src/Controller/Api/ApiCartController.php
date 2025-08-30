@@ -19,10 +19,10 @@ final class ApiCartController extends AbstractController
     }
 
     #[Route('/cart', name: 'api_cart', methods: ['POST'])]
-    public function index(): Response
+    public function findOrCreateCart(): Response
     {
         return ApiResponseFactory::responseHelper(
-            $this->service->findOrMakeNewCart()
+            $this->service->findOrCreateCart()
         );
     }
 

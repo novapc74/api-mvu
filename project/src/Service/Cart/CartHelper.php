@@ -3,6 +3,7 @@
 namespace App\Service\Cart;
 
 use App\Entity\Cart;
+use DateTimeImmutable;
 use Symfony\Component\Uid\Uuid;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,15 +24,23 @@ class CartHelper
     {
     }
 
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
     public function getCart(): ?Cart
     {
-        if(!$cartHash = $this->getCartHashFromCookie()) {
+        if (!$cartHash = $this->getCartHashFromCookie()) {
             return null;
         }
 
         return $this->findCartByHash($cartHash);
     }
 
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
     public function setCartToCookie(Response $response): void
     {
         if (!$cartHash = $this->getCartHashFromCookie()) {
@@ -73,7 +82,7 @@ class CartHelper
     private function setCartHashToCookie(Response $response, string $cartHash): void
     {
         $response->headers->setCookie(
-            new Cookie(self::CART_COOKIE_KEY, $cartHash)
+            new Cookie(self::CART_COOKIE_KEY, $cartHash, new DateTimeImmutable('+30 days'))
         );
 
         $this->setDefaultResponse($response);
@@ -86,6 +95,10 @@ class CartHelper
             ->cookies->get(self::CART_COOKIE_KEY);
     }
 
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
     private function findCartByHash(string $hash): ?Cart
     {
         $cartId = $this->hasher->decodeHash($hash);

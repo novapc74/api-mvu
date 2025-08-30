@@ -9,7 +9,7 @@
         <ul>
             {% for cart_item in cart.cart_items %}
                 <li>
-                    {% include 'pages/cart/cart_Item.html.twig' with {cart_item: cart_item} %}
+                    {% include 'pages/cart/cart_Item.html.twig' with cart_item %}
                 </li>
             {% endfor %}
         </ul>

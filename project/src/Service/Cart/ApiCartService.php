@@ -46,7 +46,7 @@ final readonly class ApiCartService
 
         $cart = $this->getCart();
 
-        $cartItem = $this->findOrCreateNewCartItem($cart, $product);
+        $cartItem = $this->getCartItem($cart, $product);
 
         $newQuantity = $this->resolveCartItem($cartItem, $dto);
 
@@ -87,7 +87,7 @@ final readonly class ApiCartService
         return $cart;
     }
 
-    private function findOrCreateNewCartItem(Cart $cart, Product $product): CartItem
+    private function getCartItem(Cart $cart, Product $product): CartItem
     {
         /**@var CartItemRepository $cartItemRepository */
         $cartItemRepository = $this->entityManager->getRepository(CartItem::class);
@@ -105,7 +105,7 @@ final readonly class ApiCartService
         return $cartItem;
     }
 
-    public function findOrMakeNewCart(): Response
+    public function findOrCreateCart(): Response
     {
         $response = new Response();
 
