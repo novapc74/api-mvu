@@ -28,7 +28,7 @@ export default class extends Controller {
         event.preventDefault();
 
         let quantity = parseInt(this.quantityTarget.value, 10);
-        if (isNaN(quantity) || quantity < 1) {
+        if (quantity < 0) {
             alert('Введите корректное количество (от 1 и выше)');
             this.quantityTarget.value = quantity;
 

@@ -18,7 +18,6 @@ readonly class CartItemDto
         #[Assert\Uuid(message: 'Невалидный идентификатор.')]
         public Uuid   $productId,
 
-        #[Assert\Positive(message: 'Количество должно быть положительным числом.')]
         public int    $quantity,
 
         #[Assert\Choice(choices: self::METHOD_TYPE)]

@@ -161,10 +161,28 @@ final readonly class ApiCartService
 
     private function overrideCartItem(CartItem $cartItem, int|float $quantity): int
     {
-        $quantity > 0 ?
-            $cartItem->setQuantity($quantity)
-            : $this->deleteCartItem($cartItem);
+        if ($quantity > 0) {
+            $cartItem->setQuantity($quantity);
+            return $quantity;
+        }
 
+        if ($this->isRemovedCartIfEmptyOne($cartItem)) {
+            return $quantity;
+        }
+
+        $this->deleteCartItem($cartItem);
         return $quantity;
+    }
+
+    private function isRemovedCartIfEmptyOne(CartItem $cartItem): bool
+    {
+        $cart = $cartItem->getCart();
+        if ($cart->getCartItems()->count() === 1 && $cart->getCartItems()->current() === $cartItem) {
+            $this->entityManager->remove($cart);
+
+            return true;
+        }
+
+        return false;
     }
 }

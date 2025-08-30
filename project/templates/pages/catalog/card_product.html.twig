@@ -1,19 +1,24 @@
-{# @var product \App\Entity\Product #}
 <div style="margin-bottom: 10px" {{ stimulus_controller('cart', {
     csrfToken: csrf_token('cart_csrf_token'),
     productId: product.id
 }) }}>
 
-    <span>{{ product.id }}</span>
+    <div style="color: #0a53be">{{ product.name }}</div>
 
     <button type="button" data-action="click->cart#decrementCartItem">
         ➖
     </button>
 
+
+    {% set quantity = 0 %}
+    {% if product.quantity is defined %}
+        {% set quantity = product.quantity %}
+    {% endif %}
+
     <input
         type="number"
         data-cart-target="quantity"
-        value="0"
+        value={{ quantity }}
         min="0"
         data-action="change->cart#handleQuantityChange"
     />
