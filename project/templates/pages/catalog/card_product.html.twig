@@ -1,21 +1,19 @@
-<div style="margin-bottom: 10px" {{ stimulus_controller('cart', {
+<div style="margin: 10px" {{ stimulus_controller('cart', {
     csrfToken: csrf_token('cart_csrf_token'),
     productId: product.id
 }) }}>
-
-    <div style="color: #0a53be">{{ product.name }}</div>
-
-    <button type="button" data-action="click->cart#decrementCartItem">
-        ➖
-    </button>
-
 
     {% set quantity = 0 %}
     {% if product.quantity is defined %}
         {% set quantity = product.quantity %}
     {% endif %}
 
+    <label for="product_label" style="color: #0a53be">{{ product.name }}</label>
+
+    <button type="button" data-action="click->cart#decrementCartItem">➖</button>
+
     <input
+        id="product_label"
         type="number"
         data-cart-target="quantity"
         value={{ quantity }}
@@ -23,10 +21,7 @@
         data-action="change->cart#handleQuantityChange"
     />
 
-
-    <button type="button" data-action="click->cart#incrementCartItem">
-        ➕
-    </button>
+    <button type="button" data-action="click->cart#incrementCartItem">➕</button>
 
 </div>
 

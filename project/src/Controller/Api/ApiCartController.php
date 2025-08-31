@@ -5,6 +5,7 @@ namespace App\Controller\Api;
 use App\Model\Cart\CartItemDto;
 use App\Exception\CustomException;
 use App\Service\Cart\ApiCartService;
+use Exception;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\ApiResponse\ApiResponseFactory;
