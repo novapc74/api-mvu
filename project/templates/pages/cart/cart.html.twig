@@ -2,20 +2,27 @@
 
 {% block body %}
 
-    <a href="{{ path('app_home') }}">Домой</a>
+    <a href="{{ path('app_home') }}" style="text-decoration: none">⏪ Домой</a>
 
-    {% if cart is defined %}
-        <h5>{{ cart.id }}</h5>
-        <ul>
-            {% for cart_item in cart.cart_items %}
-                <li>
-                    {% include 'pages/cart/cart_Item.html.twig' with cart_item %}
-                </li>
-            {% endfor %}
-        </ul>
+    <a href="{{ path('app_catalog') }}" style="text-decoration: none">📊 Каталог</a>
 
-    {% else %}
-        <h5>Корзина пуста</h5>
-    {% endif %}
+    <h1>Корзина</h1>
 
+    <div style="margin: 10px" {{ stimulus_controller('cart-page', {
+        csrfToken: csrf_token('cart_csrf_token'),
+    }) }}>
+
+        <div data-cart-target="cartContainer">
+            {% if cart is defined and cart.cart_items|length > 0 %}
+                {% for product in cart.cart_items %}
+
+                    {% include 'pages/cart/cart_item.html.twig' with product %}
+
+                {% endfor %}
+            {% else %}
+                <h2>Корзина пуста</h2>
+            {% endif %}
+        </div>
+
+    </div>
 {% endblock %}

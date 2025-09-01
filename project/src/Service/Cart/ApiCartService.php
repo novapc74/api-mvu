@@ -11,6 +11,8 @@ use App\Model\Cart\CartItemDto;
 use App\Exception\CustomException;
 use App\Repository\CartItemRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
 use Monolog\Attribute\WithMonologChannel;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -32,8 +34,11 @@ final readonly class ApiCartService
     {
     }
 
+
     /**
+     * @throws OptimisticLockException
      * @throws CustomException
+     * @throws ORMException
      */
     public function updateCart(CartItemDto $dto): int
     {
@@ -72,8 +77,11 @@ final readonly class ApiCartService
         return $product;
     }
 
+
     /**
+     * @throws OptimisticLockException
      * @throws CustomException
+     * @throws ORMException
      */
     private function getCart(): Cart
     {
@@ -105,6 +113,23 @@ final readonly class ApiCartService
         return $cartItem;
     }
 
+
+    /**
+     * @throws OptimisticLockException
+     * @throws CustomException
+     * @throws ORMException
+     */
+    public function getApiCart(): array
+    {
+        $cart = $this->getCart();
+
+        return CartService::toArray($cart);
+    }
+
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
     public function findOrCreateCart(): Response
     {
         $response = new Response();

@@ -7,7 +7,7 @@ use App\Service\QueryParam\Order\OrderService;
 use App\Service\QueryParam\Filter\FilterService;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-class QueryParamService
+final class QueryParamService implements QueryParamInterface
 {
     // ...test?f[company][id][eq]=10&f[employee][first_name][eq]=John&f[employee][last_name][eq]=Smith&s[company][name]=desc
     private ?FilterService $filterService = null;

@@ -1,7 +1,7 @@
 import {Controller} from '@hotwired/stimulus';
 
 export default class extends Controller {
-    static targets = ["quantity"];
+    static targets = ["quantity", "addButton", "quantityControls"];
     static values = {
         csrfToken: String,
         productId: String
@@ -11,18 +11,37 @@ export default class extends Controller {
         console.log('Controller connected, CSRF token:', this.csrfTokenValue);
     }
 
-    // При нажатии "+"
     async incrementCartItem(event) {
         event.preventDefault();
-
         await this.updateCart(1, 'inc');
     }
 
     async decrementCartItem(event) {
         event.preventDefault();
-
         await this.updateCart(1, 'dec');
     }
+
+    switchButton(type) {
+        if (type === 'on') {
+            this.addButtonTarget.style.display = 'block';
+            this.quantityControlsTarget.style.display = 'none';
+        }
+
+        if (type === 'off') {
+            this.addButtonTarget.style.display = 'none';
+            this.quantityControlsTarget.style.display = 'block';
+        }
+    }
+
+    // switchInput(type) {
+    //     if (type === 'on') {
+    //         this.quantityControlsTarget.style.display = 'block';
+    //     }
+    //
+    //     if (type === 'off') {
+    //         this.quantityControlsTarget.style.display = 'none';
+    //     }
+    // }
 
     async handleQuantityChange(event) {
         event.preventDefault();
@@ -34,10 +53,10 @@ export default class extends Controller {
 
             return;
         }
+
         await this.updateCart(quantity, 'set');
     }
 
-    // Универсальный метод обновления количества на сервере
     async updateCart(quantity, type) {
         const productId = this.productIdValue;
 
@@ -64,7 +83,22 @@ export default class extends Controller {
             }
 
             if (data.success) {
-                this.quantityTarget.value = data.data.quantity;
+                let newQuantity = data.data.quantity;
+
+                this.quantityTarget.value = newQuantity;
+                console.log(newQuantity);
+                if (newQuantity === 0) {
+                    this.switchButton('on');
+                    // this.switchInput('off');
+                    return;
+                }
+
+                if (newQuantity > 0) {
+                    this.switchButton('off');
+                    // this.switchInput('on');
+                }
+
+
             } else {
                 console.log(data.error?.message || 'Ошибка обновления корзины')
             }

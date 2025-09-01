@@ -3,6 +3,8 @@
 namespace App\Service\Cart;
 
 use App\Entity\Cart;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
 
 readonly class CartService
 {
@@ -12,31 +14,35 @@ readonly class CartService
     {
     }
 
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
     public function getCart(): array
     {
         if (!$cart = $this->cartHelper->getCart()) {
             return [];
         }
 
-        return $this->toArray($cart);
+        return self::toArray($cart);
     }
 
-    private function toArray(Cart $cart): array
+    public static function toArray(Cart $cart): array
     {
         return [
             'cart' => [
-                'id' => $cart->getId()->toRfc4122(),
-                'cart_items' => $this->getCartItems($cart)
+                'cart_items' => self::getCartItems($cart)
             ]
         ];
     }
 
-    private function getCartItems(Cart $cart): array
+    private static function getCartItems(Cart $cart): array
     {
         $cartItems = [];
         foreach ($cart->getCartItems() as $cartItem) {
             $cartItems[] = [
-                'product_id' => $cartItem->getProduct()->getId()->toRfc4122(),
+                'id' => $cartItem->getProduct()->getId()->toRfc4122(),
+                'name' => $cartItem->getProduct()->getName(),
                 'quantity' => $cartItem->getQuantity()
             ];
         }

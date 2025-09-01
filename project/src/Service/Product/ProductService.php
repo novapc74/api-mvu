@@ -7,6 +7,8 @@ use App\Service\Cart\CartHelper;
 use App\Service\Paginator\Paginator;
 use App\Repository\ProductRepository;
 use App\Service\Paginator\PaginatorResponseDto;
+use App\Service\Product\Adapter\ProductCatalogSqlDto;
+use Doctrine\DBAL\Exception;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
 
@@ -28,6 +30,10 @@ readonly class ProductService
     {
         $count = $this->productRepository->getProductCount();
         $collection = $this->productRepository->getProducts($this->paginator, $this->cartHelper->getCart());
+
+        #TODO SQL- вариант
+        # $sqlDto = ProductCatalogSqlDto::init($this->paginator, $this->cartHelper->getCart());
+        # $collection = $this->productRepository->getSqlProducts($sqlDto);
 
         return PaginatorResponseDto::response(
             $this->paginator->paginate($collection, $count)

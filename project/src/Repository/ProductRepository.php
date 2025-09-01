@@ -4,10 +4,12 @@ namespace App\Repository;
 
 use App\Entity\Cart;
 use App\Entity\Product;
+use Doctrine\DBAL\Exception;
 use App\Service\Paginator\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\Types\UuidType;
+use App\Service\Product\Adapter\SqlDoctrineInterface;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @extends ServiceEntityRepository<Product>
@@ -46,5 +48,15 @@ class ProductRepository extends ServiceEntityRepository
         $paginator->paginateQueryBuilder($qb);
 
         return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function getSqlProducts(SqlDoctrineInterface $dto): array
+    {
+        return $this->getEntityManager()
+            ->getConnection()
+            ->fetchAllAssociative($dto->getSql(), $dto->getParams(), $dto->getTypes());
     }
 }

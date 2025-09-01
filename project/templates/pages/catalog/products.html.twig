@@ -3,11 +3,13 @@
 {% block body %}
 
     <div style="margin: 10px;">
-        <a href="{{ path('app_home') }}">⬅ Главная</a>
+        <a href="{{ path('app_home') }}" style="text-decoration: none">⏪ Home</a>
     </div>
 
+    <h1 style="color: darkred">Каталог</h1>
+
     <section>
-        {% for product in data.items %}
+        {% for product in data.items ?? [] %}
             <div>
                 {% include 'pages/catalog/card_product.html.twig' with product %}
             </div>
@@ -15,9 +17,8 @@
     </section>
 
 
-
     <div style="margin: 10px;">
-        <a href="{{ path('app_cart') }}">Корзина 🛒</a>
+        <a href="{{ path('app_cart') }}" style="text-decoration: none">🛒 Корзина</a>
     </div>
 
 {% endblock %}
