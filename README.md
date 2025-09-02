@@ -18,10 +18,3 @@ php bin/console doctrine:database:create
 ```
 bin/console doctrine:fixtures:load --no-interaction
 ```
-
-##### TODO - сделать проверку на дублирование product_id PostDecoder (не добавлять дубли!!!)
-
-#### JWT
-```
-php bin/console lexik:jwt:generate-keypair
-```

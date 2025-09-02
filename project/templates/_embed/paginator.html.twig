@@ -1,0 +1,21 @@
+<nav aria-label="Pagination">
+    <ul class="pagination">
+        {% if page > 1 %}
+            <li>
+                <a href="?page={{ page - 1 }}" aria-label="Previous">&laquo;</a>
+            </li>
+        {% endif %}
+
+        {% for i in 1..pagesCount %}
+            <li>
+                <a href="?page={{ i }}">{{ i }}</a>
+            </li>
+        {% endfor %}
+
+        {% if page < pagesCount %}
+            <li>
+                <a href="?page={{ page + 1 }}" aria-label="Next">&raquo;</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>

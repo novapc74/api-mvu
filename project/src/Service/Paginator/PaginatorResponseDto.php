@@ -8,11 +8,13 @@ class PaginatorResponseDto
     public static function response(PaginatorInterface $paginator): array
     {
         return [
-            'page' => $paginator->getPage(),
-            'limit' => $paginator->getLimit(),
-            'count' => $paginator->getCount(),
+            'paginator' => [
+                'page' => $paginator->getPage(),
+                'limit' => $paginator->getLimit(),
+                'count' => $paginator->getCount(),
+                'pagesCount' => $paginator->getPagesCount(),
+            ],
             'items' => $paginator->getItems(),
-            'pagesCount' => $paginator->getPagesCount(),
         ];
     }
 }

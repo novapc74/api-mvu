@@ -69,13 +69,13 @@ final readonly class ApiResponseFactory
      * @param int $status HTTP-статус (по умолчанию 500)
      * @return JsonResponse
      */
-    public static function exceptionResponse(CustomException $exception, int $status = Response::HTTP_INTERNAL_SERVER_ERROR): JsonResponse
+    public static function exceptionResponse(CustomException $exception, int $status = Response::HTTP_UNPROCESSABLE_ENTITY): JsonResponse
     {
         return self::errorResponse(
             $exception->message(),
             $exception->code(),
             $exception->type(),
-            $status
+            $exception->code() ?? $status
         );
     }
 
@@ -103,7 +103,7 @@ final readonly class ApiResponseFactory
         }
 
         if ($data instanceof Throwable) {
-            return self::errorResponse($data->getMessage(), 500);
+            return self::errorResponse($data->getMessage(), $data->getCode() ?? Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         return self::errorResponse('Unsupported data type', 500);

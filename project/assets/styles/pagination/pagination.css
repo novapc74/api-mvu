@@ -1,0 +1,24 @@
+.pagination {
+    list-style: none;      /* Убираем маркеры списка */
+    padding: 0;            /* Убираем внутренние отступы */
+    margin: 0;             /* Убираем внешние отступы */
+    display: flex;         /* Выстраиваем элементы в строку */
+    gap: 8px;              /* Расстояние между элементами (опционально) */
+}
+
+.pagination li {
+    /* Можно добавить стили для элементов, например: */
+}
+
+.pagination li a {
+    display: inline-block;
+    padding: 6px 12px;
+    text-decoration: none;
+    color: #007bff;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+}
+
+.pagination li a:hover {
+    background-color: #e9ecef;
+}

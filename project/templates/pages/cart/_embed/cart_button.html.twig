@@ -1,0 +1,9 @@
+<button type="button"
+        data-action="click->cart#incrementCartItem"
+        data-cart-target="addButton"
+    {% if quantity > 0 %}
+        style="display:none;"
+    {% endif %}
+>
+    В корзину
+</button>

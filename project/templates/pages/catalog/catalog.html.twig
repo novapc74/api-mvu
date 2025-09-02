@@ -14,6 +14,10 @@
                 {% include 'pages/catalog/card_product.html.twig' with product %}
             </div>
         {% endfor %}
+
+        {% if data.paginator | length %}
+            {% include '_embed/paginator.html.twig' with data.paginator %}
+        {% endif %}
     </section>
 
 

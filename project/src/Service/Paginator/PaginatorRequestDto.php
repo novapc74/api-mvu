@@ -6,7 +6,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 readonly class PaginatorRequestDto
 {
-    private const LIMIT_PER_PAGE = 24;
+    private const LIMIT_PER_PAGE = 4    ;
 
     public function __construct(
         private int $page,

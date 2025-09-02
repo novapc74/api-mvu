@@ -8,21 +8,11 @@
 
     <h1>Корзина</h1>
 
-    <div style="margin: 10px" {{ stimulus_controller('cart-page', {
-        csrfToken: csrf_token('cart_csrf_token'),
-    }) }}>
-
-        <div data-cart-target="cartContainer">
-            {% if cart is defined and cart.cart_items|length > 0 %}
-                {% for product in cart.cart_items %}
-
-                    {% include 'pages/cart/cart_item.html.twig' with product %}
-
-                {% endfor %}
-            {% else %}
-                <h2>Корзина пуста</h2>
-            {% endif %}
+    {% for cart_item in cart.cart_items ?? [] %}
+        <div>
+            {{ cart_item.name }} <br>
+            {% include 'pages/cart/cart_update.html.twig' with {product: cart_item} %}
         </div>
+    {% endfor %}
 
-    </div>
 {% endblock %}
