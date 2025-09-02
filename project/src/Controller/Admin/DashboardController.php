@@ -20,11 +20,13 @@ class DashboardController extends AbstractDashboardController
     public function configureDashboard(): Dashboard
     {
         return Dashboard::new()
-            ->setTitle('Project');
+            ->setTitle('<span style="color: darkred">Интернет магазин</span>');
     }
 
     public function configureMenuItems(): iterable
     {
+        yield MenuItem::linkToUrl('На сайт', 'fas fa-globe', $this->generateUrl('app_home'));
+
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
         yield MenuItem::section('Auth');
         yield MenuItem::linkToCrud('User', 'fas fa-user', User::class);

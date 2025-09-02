@@ -1,0 +1,20 @@
+{% set user = app.user %}
+<nav>
+    <ul>
+        <li {{ stimulus_controller('product_search', {
+            csrfToken: String,
+            path: path('app_product_search')
+        }) }}>
+            <input type="search" id="product_search" placeholder="product search">
+            <label for="product_search">🔍</label>
+        </li>
+        <li>
+            {# тут стимулус корзины #}
+            🛒
+        </li>
+
+        {% if user %}
+            <li><span style="color: gray">{{ user.email }}</span></li>
+        {% endif %}
+    </ul>
+</nav>
