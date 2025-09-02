@@ -20,7 +20,6 @@ final class ApiCartController extends AbstractController
     {
     }
 
-
     /**
      * @throws OptimisticLockException
      * @throws CustomException
@@ -46,7 +45,6 @@ final class ApiCartController extends AbstractController
         );
     }
 
-
     /**
      * @throws OptimisticLockException
      * @throws CustomException
@@ -57,6 +55,18 @@ final class ApiCartController extends AbstractController
     {
         return ApiResponseFactory::responseHelper([
             'quantity' => $this->service->updateCart($cartItemDto)
+        ]);
+    }
+
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
+    #[Route('/cart/dropdown', name: 'api_cart_dropdown')]
+    public function dropdown(): Response
+    {
+        return $this->render('pages/cart/_embed/dropdown_items.html.twig', [
+            'items' => $this->service->getItems()
         ]);
     }
 }

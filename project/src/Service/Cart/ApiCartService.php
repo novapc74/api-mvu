@@ -210,4 +210,32 @@ final readonly class ApiCartService
 
         return false;
     }
+
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
+    public function getTotalItems(): int
+    {
+        if ($cart = $this->cartHelper->getCart()) {
+            return $cart->getCartItems()->count();
+        }
+
+        return 0;
+    }
+
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
+    public function getItems(): array
+    {
+        if ($cart = $this->cartHelper->getCart()) {
+            $cartAsArray = CartService::toArray($cart);
+            return $cartAsArray['cart']['cart_items'] ?? [];
+        }
+
+        return [];
+
+    }
 }

@@ -2,15 +2,14 @@
 <nav>
     <ul>
         <li {{ stimulus_controller('product_search', {
-            csrfToken: String,
+            csrfToken: csrf_token('cart_csrf_token'),
             path: path('app_product_search')
         }) }}>
             <input type="search" id="product_search" placeholder="product search">
             <label for="product_search">🔍</label>
         </li>
         <li>
-            {# тут стимулус корзины #}
-            🛒
+            {{ component('cart_widget') }}
         </li>
 
         {% if user %}

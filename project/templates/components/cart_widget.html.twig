@@ -1,0 +1,18 @@
+<div {{ attributes.defaults(stimulus_controller('cart-widget')) }}
+    data-action="mouseenter->cart-widget#showDropdown mouseleave->cart-widget#hideDropdown">
+
+    <a href="{{ path('app_cart') }}" data-action="click->cart-widget#goToCart">
+        Cart <span data-cart-widget-target="count">{{ this.totalItems }}</span>
+    </a>
+
+    <div data-cart-widget-target="dropdown"
+         data-action="mouseenter->cart-widget#cancelHide mouseleave->cart-widget#hideDropdown"
+         class="cart-dropdown"
+         style="display: none;">
+
+        <div data-cart-widget-target="dropdownContent">
+            {# тут список товаров из корзины  #}
+        </div>
+
+    </div>
+</div>

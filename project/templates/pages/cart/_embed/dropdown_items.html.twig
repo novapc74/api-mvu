@@ -1,0 +1,17 @@
+{% if items is empty %}
+    <p>Корзина пуста</p>
+{% else %}
+    <ul class="cart-dropdown-list" style="list-style: none; margin: 0; padding: 0;">
+        {% for item in items %}
+            <li class="cart-dropdown-item" style="display: flex; align-items: center; margin-bottom: 10px;">
+                <img src="{{ item.id }}" alt="{{ item.id }}" style="width: 40px; height: 40px; object-fit: cover; margin-right: 10px;">
+                <div>
+                    <div>{{ item.name }}</div>
+                    <div>Цена: 100 ₽</div>
+                    <div>Кол-во: {{ item.quantity }}</div>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+    <a href="{{ path('app_cart') }}" style="display: block; margin-top: 10px; text-align: right;">Перейти в корзину</a>
+{% endif %}
