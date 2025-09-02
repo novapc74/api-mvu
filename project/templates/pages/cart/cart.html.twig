@@ -10,8 +10,7 @@
 
     {% for cart_item in cart.cart_items ?? [] %}
         <div>
-            {{ cart_item.name }} <br>
-            {% include 'pages/cart/cart_update.html.twig' with {product: cart_item} %}
+            {% include 'pages/cart/cart_page_update.html.twig' with {product: cart_item} %}
         </div>
     {% endfor %}
 

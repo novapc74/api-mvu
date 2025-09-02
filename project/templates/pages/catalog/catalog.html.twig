@@ -9,15 +9,17 @@
     <h1 style="color: darkred">Каталог</h1>
 
     <section>
+
         {% for product in data.items ?? [] %}
             <div>
-                {% include 'pages/catalog/card_product.html.twig' with product %}
+                {% include 'pages/catalog/card_product.html.twig' %}
             </div>
         {% endfor %}
 
         {% if data.paginator | length %}
             {% include '_embed/paginator.html.twig' with data.paginator %}
         {% endif %}
+
     </section>
 
 

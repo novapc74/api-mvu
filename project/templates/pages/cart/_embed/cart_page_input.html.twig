@@ -1,0 +1,18 @@
+<div data-cart-target="quantityControls" {% if quantity == 0 %}style="display:none"{% endif %}>
+
+    {% include 'pages/cart/_embed/cart_item.html.twig' %}
+
+    <button type="button" data-action="click->cart#decrementCartItem">➖</button>
+
+    <label for="product_quantity"></label>
+    <input
+        id="product_quantity"
+        type="number"
+        data-cart-target="quantity"
+        value="{{ quantity }}"
+        min="0"
+        data-action="change->cart#handleQuantityChange"
+    />
+
+    <button type="button" data-action="click->cart#incrementCartItem">➕</button>
+</div>

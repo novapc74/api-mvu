@@ -1,0 +1,10 @@
+{% set quantity = product.quantity ?? 0 %}
+
+<div style="margin: 10px" {{ stimulus_controller('cart', {
+    csrfToken: csrf_token('cart_csrf_token'),
+    productId: product.id,
+}) }} data-cart-target="container">
+
+    {% include 'pages/cart/_embed/cart_page_input.html.twig' %}
+
+</div>

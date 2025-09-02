@@ -23,25 +23,24 @@ export default class extends Controller {
 
     switchButton(type) {
         if (type === 'on') {
-            this.addButtonTarget.style.display = 'block';
-            this.quantityControlsTarget.style.display = 'none';
+            if (this.hasAddButtonTarget) {
+                this.addButtonTarget.style.display = 'block';
+            }
+            if (this.hasQuantityControlsTarget) {
+                this.quantityControlsTarget.style.display = 'none';
+            }
+            return;
         }
 
         if (type === 'off') {
-            this.addButtonTarget.style.display = 'none';
-            this.quantityControlsTarget.style.display = 'block';
+            if (this.hasAddButtonTarget) {
+                this.addButtonTarget.style.display = 'none';
+            }
+            if (this.hasQuantityControlsTarget) {
+                this.quantityControlsTarget.style.display = 'block';
+            }
         }
     }
-
-    // switchInput(type) {
-    //     if (type === 'on') {
-    //         this.quantityControlsTarget.style.display = 'block';
-    //     }
-    //
-    //     if (type === 'off') {
-    //         this.quantityControlsTarget.style.display = 'none';
-    //     }
-    // }
 
     async handleQuantityChange(event) {
         event.preventDefault();
@@ -86,16 +85,15 @@ export default class extends Controller {
                 let newQuantity = data.data.quantity;
 
                 this.quantityTarget.value = newQuantity;
-                console.log(newQuantity);
+
                 if (newQuantity === 0) {
                     this.switchButton('on');
-                    // this.switchInput('off');
                     return;
                 }
 
+
                 if (newQuantity > 0) {
                     this.switchButton('off');
-                    // this.switchInput('on');
                 }
 
 
