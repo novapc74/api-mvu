@@ -31,6 +31,7 @@ readonly class CartService
     {
         return [
             'cart' => [
+                'items_count' => $cart->getCartItems()?->count() ?? 0,
                 'cart_items' => self::getCartItems($cart)
             ]
         ];

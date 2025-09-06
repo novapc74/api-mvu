@@ -1,15 +1,20 @@
 {% set user = app.user %}
 <nav>
     <ul>
-        <li {{ stimulus_controller('product_search', {
-            csrfToken: csrf_token('cart_csrf_token'),
-            path: path('app_product_search')
-        }) }}>
-            <input type="search" id="product_search" placeholder="product search">
-            <label for="product_search">🔍</label>
+        <li>
+            <div {{ stimulus_controller('product_search', {
+                csrfToken: csrf_token('cart_csrf_token'),
+                path: path('app_product_search')
+            }) }}>
+                <input type="search" id="product_search" placeholder="product search">
+                <label for="product_search">🔍</label>
+            </div>
+
         </li>
         <li>
-            {{ component('cart_widget') }}
+            <div data-controller="cart-widget" data-cart-widget-value="{{ csrf_token('cart_csrf_token') }}">
+                <span>Товаров в корзине: <span data-cart-widget-target="count"></span></span>
+            </div>
         </li>
 
         {% if user %}

@@ -89,7 +89,7 @@ final readonly class ApiCartService
             $message = 'Корзина не найдена.';
             $this->logger->error($message);
 
-            throw new CustomException($message, self::CART_NOT_FOUND);
+            throw new CustomException($message, self::CART_NOT_FOUND, 404);
         }
 
         return $cart;

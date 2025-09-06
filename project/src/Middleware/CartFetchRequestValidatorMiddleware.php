@@ -17,11 +17,12 @@ readonly final class CartFetchRequestValidatorMiddleware
      */
     public function __invoke(RequestEvent $event): void
     {
+
         $request = $event->getRequest();
 
         $route = $request->attributes->get('_route');
 
-        if (!$request->isXmlHttpRequest()) {
+        if ($request->isXmlHttpRequest()) {
             return;
         }
 
@@ -29,6 +30,6 @@ readonly final class CartFetchRequestValidatorMiddleware
             return;
         }
 
-        $this->fetchRequestValidator->validateFetchRequest($request);
+//        $this->fetchRequestValidator->validateFetchRequest($request);
     }
 }

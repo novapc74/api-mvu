@@ -7,10 +7,6 @@ export default class extends Controller {
         productId: String
     }
 
-    connect() {
-        console.log('Controller connected, CSRF token:', this.csrfTokenValue);
-    }
-
     async incrementCartItem(event) {
         event.preventDefault();
         await this.updateCart(1, 'inc');
@@ -82,9 +78,12 @@ export default class extends Controller {
             }
 
             if (data.success) {
-                let newQuantity = data.data.quantity;
+
+                let newQuantity = data.quantity;
 
                 this.quantityTarget.value = newQuantity;
+
+                window.dispatchEvent(new CustomEvent('cart:updated'));
 
                 if (newQuantity === 0) {
                     this.switchButton('on');
@@ -96,7 +95,6 @@ export default class extends Controller {
                     this.switchButton('off');
                 }
 
-
             } else {
                 console.log(data.error?.message || 'Ошибка обновления корзины')
             }
@@ -104,6 +102,8 @@ export default class extends Controller {
         } catch (error) {
             console.log('Ошибка:', error);
         }
+
+
     }
 
     async createCart() {

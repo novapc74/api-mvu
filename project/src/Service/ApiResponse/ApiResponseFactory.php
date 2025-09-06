@@ -31,12 +31,9 @@ final readonly class ApiResponseFactory
      */
     public static function successResponse(array $data, int $status = Response::HTTP_OK): JsonResponse
     {
-        return new JsonResponse(self::stringifyData(
-            [
-                'success' => true,
-                'data' => $data,
-            ]
-        ), $status, [], true);
+        $data['success'] = true;
+
+        return new JsonResponse(self::stringifyData($data), $status, [], true);
     }
 
     /**
@@ -48,7 +45,7 @@ final readonly class ApiResponseFactory
      * @param int $status HTTP-статус (по умолчанию 500 для исключений)
      * @return JsonResponse
      */
-    public static function errorResponse(string $message, int $code = 0, string $type = 'internal_server_error', int $status = Response::HTTP_INTERNAL_SERVER_ERROR): JsonResponse
+    public static function errorResponse(string $message, mixed $code = 0, string $type = 'internal_server_error', int $status = Response::HTTP_INTERNAL_SERVER_ERROR): JsonResponse
     {
         return new JsonResponse(self::stringifyData(
             [
@@ -59,7 +56,7 @@ final readonly class ApiResponseFactory
                     'type' => $type,
                 ],
             ]
-        ), $status, [], true);
+        ), $code ?? $status, [], true);
     }
 
     /**
@@ -73,9 +70,9 @@ final readonly class ApiResponseFactory
     {
         return self::errorResponse(
             $exception->message(),
-            $exception->code(),
+            $exception->code() ?? Response::HTTP_UNPROCESSABLE_ENTITY,
             $exception->type(),
-            $exception->code() ?? $status
+            $status
         );
     }
 

@@ -1,44 +1,34 @@
-import { Controller } from '@hotwired/stimulus';
+import {Controller} from '@hotwired/stimulus';
 
 export default class extends Controller {
-    static targets = ['count', 'dropdown', 'dropdownContent'];
+    static targets = ['count'];
+    static values = {
+        csrfToken: String,
+    };
 
     connect() {
-        this.dropdownVisible = false;
-        this.timeoutId = null;
+        // Слушаем глобальное событие cart:updated
+        window.addEventListener('cart:updated', () => {
+            this.refreshCount();
+        });
+
+        // При загрузке сразу обновляем количество
+        this.refreshCount();
     }
 
-    showDropdown() {
-        if (this.dropdownVisible) return;
-
-        // Загружаем данные AJAX-ом
-        fetch('/api/cart/dropdown')
-            .then(response => response.text())
-            .then(html => {
-                this.dropdownContentTarget.innerHTML = html;
-                this.dropdownTarget.style.display = 'block';
-                this.dropdownVisible = true;
+    refreshCount() {
+        fetch('/api/cart', {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': this.csrfTokenValue,
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                this.countTarget.textContent = data.cart.items_count;
+            })
+            .catch(() => {
+                this.countTarget.textContent = '0';
             });
-    }
-
-    hideDropdown() {
-        // Чтобы не дергался дропдаун при быстром уходе мыши,
-        // можно добавить небольшой таймаут
-        this.timeoutId = setTimeout(() => {
-            this.dropdownTarget.style.display = 'none';
-            this.dropdownVisible = false;
-        }, 300);
-    }
-
-    cancelHide() {
-        if (this.timeoutId) {
-            clearTimeout(this.timeoutId);
-            this.timeoutId = null;
-        }
-    }
-
-    goToCart(event) {
-        event.preventDefault();
-        window.location.href = this.element.querySelector('a').href;
     }
 }
