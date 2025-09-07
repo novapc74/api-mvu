@@ -1,5 +1,5 @@
 import BaseController from './base_controller';
-import {useClickOutside, useDebounce} from 'stimulus-use';
+import {useClickOutside} from 'stimulus-use';
 
 export default class extends BaseController {
     static targets = ['result'];
@@ -7,16 +7,19 @@ export default class extends BaseController {
         csrfToken: String,
         url: String
     }
-    static debounces = ['search'];
 
     connect() {
         useClickOutside(this);
-        useDebounce(this);
     }
 
-    async onSearchInput(event) {
+    onSearchInput(event) {
+        const query = event.currentTarget.value;
+        this.search(query);
+    }
+
+    async search(query) {
         const params = new URLSearchParams({
-            search: event.currentTarget.value,
+            search: query,
             preview: 1,
         });
 
@@ -33,10 +36,7 @@ export default class extends BaseController {
             return;
         }
 
-        if (data.success) {
-            // console.log(data.data);
-            this.resultTarget.innerHTML = data.data;
-        }
+        this.resultTarget.innerHTML = data.data;
     }
 
     clickOutside(event) {
