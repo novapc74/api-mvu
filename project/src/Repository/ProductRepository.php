@@ -57,7 +57,7 @@ class ProductRepository extends ServiceEntityRepository
     {
         if ($search = $dto->search) {
             $qb->andWhere('LOWER(p.name) LIKE :search')
-                ->setParameter('search', '%' . mb_strtolower($search) . '%');
+                ->setParameter('search', '%' . trim(mb_strtolower($search)) . '%');
         }
     }
 }

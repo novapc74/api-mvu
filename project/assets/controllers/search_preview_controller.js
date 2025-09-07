@@ -20,7 +20,7 @@ export default class extends BaseController {
     async search(query) {
         const params = new URLSearchParams({
             search: query,
-            preview: 1,
+            limit: 8,
         });
 
         const response = await fetch(
