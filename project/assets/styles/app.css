@@ -1,6 +1,6 @@
 /* main.css */
-@import url("./components/alert.css");
 @import url("./pagination/pagination.css");
+@import url("./nav_bar/user_email_widget.css");
 
 body {
     background-color: lightgray;

@@ -1,0 +1,6 @@
+<a href="{{ path('app_cart') }}"
+   data-controller="cart-widget"
+   data-cart-widget-value="{{ csrf_token('cart_csrf_token') }}"
+>
+    Товаров в корзине: <span data-cart-widget-target="count"></span>
+</a>

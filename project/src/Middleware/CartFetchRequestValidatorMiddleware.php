@@ -26,10 +26,10 @@ readonly final class CartFetchRequestValidatorMiddleware
             return;
         }
 
-        if (!$route || !str_starts_with($route, 'api_cart')) {
+        if (!$route || !str_starts_with($route, 'api_')) {
             return;
         }
 
-//        $this->fetchRequestValidator->validateFetchRequest($request);
+        $this->fetchRequestValidator->validateFetchRequest($request);
     }
 }

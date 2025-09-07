@@ -1,0 +1,30 @@
+.user-email-widget {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    background: #f5f7fa;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem; /* 6px */
+    padding: 0.3em 0.6em;
+    font-family: system-ui, sans-serif;
+    font-size: 0.9rem;
+    color: #4b5563; /* gray-700 */
+    user-select: text;
+    cursor: default;
+    max-width: 250px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.user-email-widget .icon {
+    width: 1em;
+    height: 1em;
+    stroke: #6b7280; /* gray-500 */
+    flex-shrink: 0;
+}
+
+.user-email-widget .email {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

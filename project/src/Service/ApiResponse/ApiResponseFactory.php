@@ -99,8 +99,17 @@ final readonly class ApiResponseFactory
             return self::successResponse($data, $successStatus);
         }
 
+        if (is_string($data)) {
+            return self::successResponse(compact('data'), $successStatus);
+        }
+
         if ($data instanceof Throwable) {
-            return self::errorResponse($data->getMessage(), $data->getCode() ?? Response::HTTP_UNPROCESSABLE_ENTITY);
+            $code = $data->getCode() ?? Response::HTTP_INTERNAL_SERVER_ERROR;
+            if ($code == 0) {
+                $code = Response::HTTP_INTERNAL_SERVER_ERROR;
+            }
+
+            return self::errorResponse($data->getMessage(), $code);
         }
 
         return self::errorResponse('Unsupported data type', 500);

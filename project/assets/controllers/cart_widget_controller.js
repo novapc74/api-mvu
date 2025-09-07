@@ -1,6 +1,6 @@
-import {Controller} from '@hotwired/stimulus';
+import BaseController from './base_controller';
 
-export default class extends Controller {
+export default class extends BaseController {
     static targets = ['count'];
     static values = {
         csrfToken: String,
@@ -16,12 +16,10 @@ export default class extends Controller {
         this.refreshCount();
     }
 
+    // document.querySelector('[name="csrf-token"]').content,
     refreshCount() {
         fetch('/api/cart', {
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRF-TOKEN': this.csrfTokenValue,
-            }
+            headers: this.getHeaders()
         })
             .then(response => response.json())
             .then(data => {

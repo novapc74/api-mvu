@@ -4,12 +4,12 @@ namespace App\Repository;
 
 use App\Entity\Cart;
 use App\Entity\Product;
-use Doctrine\DBAL\Exception;
+use App\Model\Product\ProductSearchDto;
 use App\Service\Paginator\Paginator;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Doctrine\Types\UuidType;
-use App\Service\Product\Adapter\SqlDoctrineInterface;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @extends ServiceEntityRepository<Product>
@@ -21,16 +21,17 @@ class ProductRepository extends ServiceEntityRepository
         parent::__construct($registry, Product::class);
     }
 
-    public function getProductCount(): int
+    public function getProductCount(ProductSearchDto $dto): int
     {
         $qb = $this->createQueryBuilder('p')
             ->select('COUNT(p)');
 
+        $this->resolveFilters($dto, $qb);
 
         return $qb->getQuery()->getSingleScalarResult();
     }
 
-    public function getProducts(Paginator $paginator, ?Cart $cart = null): array
+    public function getProducts(ProductSearchDto $dto, Paginator $paginator, ?Cart $cart = null): array
     {
         $qb = $this->createQueryBuilder('p')
             ->select([
@@ -45,18 +46,18 @@ class ProductRepository extends ServiceEntityRepository
                 ->setParameter('cartId', $cart->getId()->toRfc4122(), UuidType::NAME);
         }
 
+        $this->resolveFilters($dto, $qb);
+
         $paginator->paginateQueryBuilder($qb);
 
         return $qb->getQuery()->getResult();
     }
 
-    /**
-     * @throws Exception
-     */
-    public function getSqlProducts(SqlDoctrineInterface $dto): array
+    private function resolveFilters(ProductSearchDto $dto, QueryBuilder $qb): void
     {
-        return $this->getEntityManager()
-            ->getConnection()
-            ->fetchAllAssociative($dto->getSql(), $dto->getParams(), $dto->getTypes());
+        if ($search = $dto->search) {
+            $qb->andWhere('LOWER(p.name) LIKE :search')
+                ->setParameter('search', '%' . mb_strtolower($search) . '%');
+        }
     }
 }

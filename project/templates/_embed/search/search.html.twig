@@ -1,0 +1,15 @@
+<div {{ stimulus_controller('search-preview', {
+    csrfToken: csrf_token('cart_csrf_token'),
+    url: path('api_search')
+}) }}>
+    <input type="search"
+           name="search"
+           id="search"
+           placeholder="search"
+           data-action="search-preview#onSearchInput"
+    >
+    <label for="search">🔍</label>
+
+    <div data-search-preview-target="result"></div>
+
+</div>

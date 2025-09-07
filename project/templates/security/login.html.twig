@@ -15,38 +15,11 @@
         {% endif %}
 
         <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
-
-        {% component 'Form:Input' with {
-            id:"username",
-            label: "Почта",
-            type: "email",
-            name: "_username",
-            value: last_username,
-            autocomplete: "email",
-            required: true,
-            autofocus: true,
-            placeholder: "Почта",
-        } %}
-        {% endcomponent %}
-
-        {% component 'Form:Input' with {
-            id:'password',
-            label:'Пароль',
-            type:'password',
-            name:'_password',
-            autocomplete:'current-password',
-            required:true,
-        } %}
-        {% endcomponent %}
-
-        {% component 'Form:Input' with {
-            type:'hidden',
-            name:'_csrf_token',
-            value: csrf_token('authenticate'),
-            data:'csrf-protection',
-        } %}
-        {% endcomponent %}
-
+        <label for="username">Email</label>
+        <input type="email" value="{{ last_username }}" name="_username" id="username" class="form-control" autocomplete="email" required autofocus>
+        <label for="password">Password</label>
+        <input type="password" name="_password" id="password" class="form-control" autocomplete="current-password" required>
+        <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
 
         {#
         Uncomment this section and add a remember_me option below your firewall to activate remember me functionality.
@@ -58,11 +31,8 @@
         </div>
         #}
 
-
-        {% component 'Form:Button' with {type:'submit'}%}
-            {% block content %}Поехали!{% endblock %}
-        {% endcomponent %}
-
-
+        <button class="btn btn-lg btn-primary" type="submit">
+            Sign in
+        </button>
     </form>
 {% endblock %}

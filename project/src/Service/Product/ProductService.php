@@ -3,6 +3,7 @@
 namespace App\Service\Product;
 
 use App\Entity\Product;
+use App\Model\Product\ProductSearchDto;
 use Doctrine\DBAL\Exception;
 use App\Service\Cart\CartHelper;
 use App\Service\Paginator\Paginator;
@@ -26,10 +27,10 @@ readonly class ProductService
      * @throws OptimisticLockException
      * @throws ORMException
      */
-    public function getProducts(): array
+    public function getProducts(ProductSearchDto $dto): array
     {
-        $count = $this->productRepository->getProductCount();
-        $collection = $this->productRepository->getProducts($this->paginator, $this->cartHelper->getCart());
+        $count = $this->productRepository->getProductCount($dto);
+        $collection = $this->productRepository->getProducts($dto, $this->paginator, $this->cartHelper->getCart());
 
         #TODO SQL- вариант
         # $sqlDto = ProductCatalogSqlDto::init($this->paginator, $this->cartHelper->getCart());

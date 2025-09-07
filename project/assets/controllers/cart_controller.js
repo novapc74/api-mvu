@@ -1,6 +1,6 @@
-import {Controller} from '@hotwired/stimulus';
+import BaseController from './base_controller';
 
-export default class extends Controller {
+export default class extends BaseController {
     static targets = ["quantity", "addButton", "quantityControls"];
     static values = {
         csrfToken: String,
@@ -123,13 +123,5 @@ export default class extends Controller {
             console.log('Ошибка создания корзины:', error);
             throw error;
         }
-    }
-
-    getHeaders() {
-        return {
-            'Content-Type': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest',
-            'X-CSRF-Token': this.csrfTokenValue,
-        };
     }
 }
