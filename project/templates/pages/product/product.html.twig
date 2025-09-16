@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <h1>Product page</h1>
+
+    {% include '_embed/breadcrumbs/breadcrumbs.htm.twig' %}
+
+    {% include 'pages/cart/catalog_cart_update.html.twig' with {product: data.product} %}
+
+
+{% endblock %}

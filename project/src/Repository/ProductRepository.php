@@ -31,6 +31,26 @@ class ProductRepository extends ServiceEntityRepository
         return $qb->getQuery()->getSingleScalarResult();
     }
 
+    public function getProduct(string $slug, ?Cart $cart = null): ?array
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->select([
+                'p.id',
+                'p.name',
+                'p.slug',
+            ])
+            ->andWhere('p.slug = :slug')
+            ->setParameter('slug', $slug);
+
+        if ($cart) {
+            $qb->addSelect('COALESCE(ci.quantity, 0) AS quantity')
+                ->leftJoin('p.cartItems', 'ci', 'WITH', 'ci.cart = :cartId')
+                ->setParameter('cartId', $cart->getId()->toRfc4122(), UuidType::NAME);
+        }
+
+        return $qb->getQuery()->getOneOrNullResult();
+    }
+
     public function getProducts(ProductSearchDto $dto, Paginator $paginator, ?Cart $cart = null): array
     {
         $qb = $this->createQueryBuilder('p')

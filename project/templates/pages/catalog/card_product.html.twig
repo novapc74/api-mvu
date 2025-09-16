@@ -1,7 +1,11 @@
 <div style="border: 1px solid darkolivegreen; margin-bottom: 10px; padding: 10px">
 
-    ID: {{ product.id }} <br>
-    Товар: {{ product.name }} <br>
+    <a href="{{ path('product_page', {slug:product.slug}) }}" style="text-decoration: none">
+        <span>
+                ID: {{ product.id }} <br>
+        Товар: {{ product.name }} <br>
+        </span>
+    </a>
 
     {% include 'pages/cart/catalog_cart_update.html.twig' %}
 

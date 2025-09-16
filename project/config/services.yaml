@@ -20,6 +20,12 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
+    App\EventSubscriber\DoctrineFixturesListener:
+        arguments:
+            - '@doctrine.dbal.default_connection'  # Или ваш connection ID
+            - '@kernel'  # Внедряем kernel
+        tags: [ 'kernel.event_subscriber' ]
+
     App\Service\Cart\CartHash:
         arguments:
             $cartSalt: '%app.cart.salt%'

@@ -9,7 +9,6 @@ use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -19,10 +18,16 @@ final class ProductController extends AbstractController
     {
     }
 
-    #[Route('/product/{slug}', methods: ['GET'])]
-    public function show(Product $product): JsonResponse
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
+    #[Route('/product/{slug}', name: 'product_page', methods: ['GET'])]
+    public function show(string $slug): Response
     {
-        return new JsonResponse($this->service->getProductPage($product));
+        return $this->render('pages/product/product.html.twig', [
+            'data' => $this->service->getProductPage($slug)
+        ]);
     }
 
     /**

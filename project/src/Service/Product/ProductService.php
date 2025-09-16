@@ -41,18 +41,17 @@ readonly class ProductService
         );
     }
 
-    public function getProductPage(Product $product): array
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
+    public function getProductPage(string $slug): array
     {
+        $product = $this->productRepository->getProduct($slug, $this->cartHelper->getCart());
+
         return [
-            'breadcrumbs' => '',
-            'product' => [
-                'id' => $product->getId()->toRfc4122(),
-                'name' => $product->getName(),
-            ],
-            'category' => [
-                'id' => $product->getCategory()->getId()->toRfc4122(),
-                'name' => $product->getCategory()->getName(),
-            ],
+            'breadcrumbs' => 'пока думаю, как лучше собрать...',
+            'product' => $product,
         ];
     }
 }

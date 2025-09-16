@@ -4,6 +4,8 @@ namespace App\DataFixtures;
 
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use ReflectionClass;
+use ReflectionException;
 
 abstract class AppFixtures extends Fixture
 {
@@ -18,14 +20,18 @@ abstract class AppFixtures extends Fixture
         $this->loadData($manager);
     }
 
+    /**
+     * @throws ReflectionException
+     */
     protected function createEntity(string $className, int $count, callable $factory): void
     {
+        $shortClass = (new ReflectionClass($className))->getShortName();
+
         for ($i = 0; $i < $count; $i++) {
             $entity = new $className();
             $factory($entity, $i);
             $this->manager->persist($entity);
-            $class = explode('\\', $className);
-            $this->addReference(end($class) . '_' . $i, $entity);
+            $this->addReference("{$shortClass}_$i", $entity);
         }
     }
 
