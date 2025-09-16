@@ -12,7 +12,7 @@ class CategoryThirdLevelFixtures extends AppFixtures implements DependentFixture
 {
     protected function createEntity(string $className, int $count, callable $factory): void
     {
-        $shortClass = (new ReflectionClass($className))->getShortName();
+        $shortClass = self::getShortClassName($className);
 
         for ($i = 0; $i < $count; $i++) {
             $entity = new $className();
@@ -45,8 +45,6 @@ class CategoryThirdLevelFixtures extends AppFixtures implements DependentFixture
     public function getDependencies(): array
     {
         return [
-            UserFixtures::class,
-            CategoryFixtures::class,
             CategorySecondLevelFixtures::class
         ];
     }

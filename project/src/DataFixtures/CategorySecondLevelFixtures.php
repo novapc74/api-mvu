@@ -2,7 +2,6 @@
 
 namespace App\DataFixtures;
 
-use ReflectionClass;
 use App\Entity\Category;
 use ReflectionException;
 use Doctrine\Persistence\ObjectManager;
@@ -15,7 +14,7 @@ class CategorySecondLevelFixtures extends AppFixtures implements DependentFixtur
      */
     protected function createEntity(string $className, int $count, callable $factory): void
     {
-        $shortClass = (new ReflectionClass($className))->getShortName();
+        $shortClass = self::getShortClassName($className);
 
         for ($i = 0; $i < $count; $i++) {
             $entity = new $className();
@@ -45,7 +44,6 @@ class CategorySecondLevelFixtures extends AppFixtures implements DependentFixtur
     public function getDependencies(): array
     {
         return [
-            UserFixtures::class,
             CategoryFixtures::class,
         ];
     }

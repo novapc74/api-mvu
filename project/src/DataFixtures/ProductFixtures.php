@@ -2,48 +2,122 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\Category;
 use App\Entity\Product;
+use App\Entity\Category;
+use ReflectionException;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
-use Faker\Factory;
-use Faker\Generator;
 
 class ProductFixtures extends AppFixtures implements DependentFixtureInterface
 {
-    private Generator $faker;
-
-    public function __construct()
+    /**
+     * @throws ReflectionException
+     */
+    protected function loadData(ObjectManager $manager): void
     {
-        $this->faker = Factory::create();
-    }
+        $thirdLevelCategories = array_map(
+            fn(int $i) => $this->getReference("ThirdLevel_Category_$i", Category::class),
+            range(0, 26)
+        );
 
 
-    protected function loadData(ObjectManager $manager)
-    {
-        $this->createEntity(Product::class, 9, function (Product $product, $count) {
-            $product
-                ->setName($this->faker->title());
+        /** Для каждой категории создаём 12 товаров */
+        $this->createEntity(Product::class, 324, function (Product $product, int $count) use ($thirdLevelCategories) {
+            $index = intdiv($count - 1, 12);
 
-            if ($count <= 2) {
-                $category = $this->getReference('Category_0', Category::class);
-            } elseif ($count <= 5) {
-                $category = $this->getReference('Category_1', Category::class);
-            } else {
-                $category = $this->getReference('Category_2', Category::class);
-            }
+            $name = mb_ucfirst(self::getName($index));
 
-            $product->setCategory($category);
+            $product->setName(self::generateName("{$name}_", $count));
+
+            $product->setCategory($thirdLevelCategories[$index]);
+
+            #TODO Можно добавить другие свойства товара, если есть
         });
 
         $manager->flush();
     }
 
+    private static function getName($index): string
+    {
+        $items = [
+            "футболка",
+            "майка",
+            "топ",
+            "водолазка",
+            "свитер",
+            "кофта",
+            "кардиган",
+            "пуловер",
+            "худи",
+            "толстовка",
+            "джемпер",
+            "блузка",
+            "туника",
+            "платье",
+            "юбка",
+            "шорты",
+            "леггинсы",
+            "колготки",
+            "носки",
+            "гольфы",
+            "шапка",
+            "шарф",
+            "перчатки",
+            "варежки",
+            "шарф-хомут",
+            "бандана",
+            "повязка на голову"
+        ];
+
+        return $items[$index];
+    }
+
     public function getDependencies(): array
     {
         return [
-            UserFixtures::class,
-            CategoryFixtures::class,
+            CategoryThirdLevelFixtures::class,
         ];
     }
 }
+
+//class ProductFixtures extends AppFixtures implements DependentFixtureInterface
+//{
+//    private Generator $faker;
+//
+//    public function __construct()
+//    {
+//        $this->faker = Factory::create();
+//    }
+//
+//
+//    /**
+//     * @throws ReflectionException
+//     */
+//    protected function loadData(ObjectManager $manager): void
+//    {
+//        $this->createEntity(Product::class, 9, function (Product $product, $count) {
+//            $product
+//                ->setName($this->faker->title());
+//
+//            if ($count <= 2) {
+//                $category = $this->getReference('Category_0', Category::class);
+//            } elseif ($count <= 5) {
+//                $category = $this->getReference('Category_1', Category::class);
+//            } else {
+//                $category = $this->getReference('Category_2', Category::class);
+//            }
+//
+//            $product->setCategory($category);
+//        });
+//
+//        $manager->flush();
+//    }
+//
+//    public function getDependencies(): array
+//    {
+//        return [
+//            UserFixtures::class,
+//            CategoryFixtures::class,
+//        ];
+//    }
+//}
