@@ -8,17 +8,11 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 
 class CategoryFixtures extends AppFixtures implements DependentFixtureInterface
 {
-    private const PARENT_CATEGORY_DATA = [
-        'Свитшоты',
-        'Футболки',
-        'Худи',
-    ];
-
     protected function loadData(ObjectManager $manager): void
     {
         $this->createEntity(Category::class, 3, function (Category $category, $count) {
             $category
-                ->setName(self::PARENT_CATEGORY_DATA[$count]);
+                ->setName(self::generateName('1. Категория_', $count));
         });
 
         $manager->flush();

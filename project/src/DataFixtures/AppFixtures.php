@@ -7,7 +7,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 
 abstract class AppFixtures extends Fixture
 {
-    private ObjectManager $manager;
+    protected ObjectManager $manager;
 
     abstract protected function loadData(ObjectManager $manager);
 
@@ -27,5 +27,10 @@ abstract class AppFixtures extends Fixture
             $class = explode('\\', $className);
             $this->addReference(end($class) . '_' . $i, $entity);
         }
+    }
+
+    protected static function generateName(string $name, int $index): string
+    {
+        return $name . ++$index;
     }
 }
