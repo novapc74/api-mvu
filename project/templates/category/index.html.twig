@@ -3,18 +3,21 @@
 {% block title %}Hello CategoryController!{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    {% for item in breadcrumbs %}
+        <p>id: {{ item.id }}</p>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/project/src/Controller/CategoryController.php</code></li>
-        <li>Your template at <code>/project/templates/category/index.html.twig</code></li>
-    </ul>
-</div>
+        <span>Категория: </span>
+        {% if item.is_active %}
+            <p>{{ item.category_name }}</p>
+        {% else %}
+            <a href="{{ path('app_category', {slug: item.slug}) }}">slug: {{ item.category_name }}</a>
+        {% endif %}
+
+        {% if  item.product_count %}
+            <p>Количество товаров: {{ item.product_count }}</p>
+        {% endif %}
+        <hr>
+    {% endfor %}
+
 {% endblock %}
