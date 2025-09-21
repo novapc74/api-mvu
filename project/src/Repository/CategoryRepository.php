@@ -17,6 +17,19 @@ class CategoryRepository extends ServiceEntityRepository
         parent::__construct($registry, Category::class);
     }
 
+    public function getMainCategories(): array
+    {
+        return $this->createQueryBuilder('c')
+            ->select([
+                'c.name',
+                'c.slug'
+            ])
+            ->where('c.category is NULL')
+            ->orderBy('c.name', 'ASC')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
     /**
      * @throws Exception
      */
@@ -71,17 +84,14 @@ class CategoryRepository extends ServiceEntityRepository
         $breadcrumbs = [];
 
         while ($row = $result->fetchAssociative()) {
-            $id = $binaryToUuid($row['id']);
-            $parentId = $row['parent_category_id'] ? $binaryToUuid($row['parent_category_id']) : null;
-
             $breadcrumbs[] = [
-                'id' => $id,  // Строка UUID
+                'id' => $binaryToUuid($row['id']),
                 'category_name' => $row['category_name'],
                 'slug' => $row['slug'],
                 'product_count' => $row['product_count'] !== null ? (int)$row['product_count'] : null,
                 'level' => (int)$row['level'],
                 'is_active' => (bool)$row['is_active'],
-                'parent_category_id' => $parentId,
+                'parent_category_id' => $row['parent_category_id'] ? $binaryToUuid($row['parent_category_id']) : null,
             ];
         }
 

@@ -27,10 +27,10 @@ readonly class ProductService
      * @throws OptimisticLockException
      * @throws ORMException
      */
-    public function getProducts(ProductSearchDto $dto): array
+    public function getProducts(?ProductSearchDto $dto = null): array
     {
         $count = $this->productRepository->getProductCount($dto);
-        $collection = $this->productRepository->getProducts($dto, $this->paginator, $this->cartHelper->getCart());
+        $collection = $this->productRepository->getProducts($this->paginator, $this->cartHelper->getCart(), $dto);
 
         #TODO SQL- вариант
         # $sqlDto = ProductCatalogSqlDto::init($this->paginator, $this->cartHelper->getCart());

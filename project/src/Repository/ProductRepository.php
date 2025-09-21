@@ -21,12 +21,14 @@ class ProductRepository extends ServiceEntityRepository
         parent::__construct($registry, Product::class);
     }
 
-    public function getProductCount(ProductSearchDto $dto): int
+    public function getProductCount(?ProductSearchDto $dto = null): int
     {
         $qb = $this->createQueryBuilder('p')
             ->select('COUNT(p)');
 
-        $this->resolveFilters($dto, $qb);
+        if ($dto !== null) {
+            $this->resolveFilters($dto, $qb);
+        }
 
         return $qb->getQuery()->getSingleScalarResult();
     }
@@ -51,14 +53,16 @@ class ProductRepository extends ServiceEntityRepository
         return $qb->getQuery()->getOneOrNullResult();
     }
 
-    public function getProducts(ProductSearchDto $dto, Paginator $paginator, ?Cart $cart = null): array
+    public function getProducts(Paginator $paginator, ?Cart $cart = null, ?ProductSearchDto $dto = null): array
     {
         $qb = $this->createQueryBuilder('p')
             ->select([
                 'p.id',
                 'p.name',
                 'p.slug',
-            ]);
+                'p.popularityIndex'
+            ])
+            ->orderBy('p.popularityIndex', 'DESC');
 
         if ($cart) {
             $qb->addSelect('COALESCE(ci.quantity, 0) AS quantity')
@@ -66,7 +70,9 @@ class ProductRepository extends ServiceEntityRepository
                 ->setParameter('cartId', $cart->getId()->toRfc4122(), UuidType::NAME);
         }
 
-        $this->resolveFilters($dto, $qb);
+        if ($dto !== null) {
+            $this->resolveFilters($dto, $qb);
+        }
 
         $paginator->paginateQueryBuilder($qb);
 

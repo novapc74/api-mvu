@@ -4,12 +4,22 @@
 
 {% block body %}
 
-    {% if app.user %}
-        Вы авторизованы как {{ app.user.userIdentifier }}
-    {% endif %}
+    <section>
+        {% include '_embed/nav/nav_bar.html.twig' %}
+    </section>
+    <section>
+        {% include '_embed/category/categories.html.twig' %}
+    </section>
+    <section>
+        {% for product in data.items ?? [] %}
+            <div>
+                {% include 'pages/catalog/card_product.html.twig' %}
+            </div>
+        {% endfor %}
 
-    <div style="margin: 10px;">
-        <a href="{{ path('app_catalog') }}">Каталог ➡</a>
-    </div>
+        {% if data.paginator is defined %}
+            {% include '_embed/paginator.html.twig' with data.paginator %}
+        {% endif %}
+    </section>
 
 {% endblock %}

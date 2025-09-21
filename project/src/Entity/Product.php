@@ -2,12 +2,12 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\Trait\IdentifierTrait;
 use App\Repository\ProductRepository;
 use App\Entity\Trait\UuidGeneratorTrait;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\HasLifecycleCallbacks]
 #[ORM\Index(name: 'IDX_PRODUCT_SLUG', columns: ['slug'])]
@@ -25,6 +25,9 @@ class Product
      */
     #[ORM\OneToMany(targetEntity: CartItem::class, mappedBy: 'product', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $cartItems;
+
+    #[ORM\Column]
+    private int $popularityIndex = 0;
 
     public function __construct()
     {
@@ -69,6 +72,18 @@ class Product
                 $cartItem->setProduct(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getPopularityIndex(): int
+    {
+        return $this->popularityIndex;
+    }
+
+    public function setPopularityIndex(int $popularityIndex): static
+    {
+        $this->popularityIndex = $popularityIndex;
 
         return $this;
     }

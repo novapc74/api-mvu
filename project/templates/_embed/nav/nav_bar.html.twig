@@ -1,7 +1,6 @@
 {% set user = app.user %}
 <nav>
     <ul>
-
         <li>
             {% include '_embed/search/search.html.twig' %}
         </li>
@@ -11,8 +10,9 @@
         </li>
 
         {% if user %}
-            {% include '_embed/nav/user_widget.html.twig' %}
+            <li>
+                {% include '_embed/nav/user_widget.html.twig' %}
+            </li>
         {% endif %}
-
     </ul>
 </nav>
