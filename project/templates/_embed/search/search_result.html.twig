@@ -1,3 +1,17 @@
-{% for item in data.items %}
-    {{ item.name }} <br>
-{% endfor %}
+<div class="search-wrapper" style="position: relative;" data-controller="search-dropdown" tabindex="0">
+    <ul class="search-dropdown" role="listbox" data-search-dropdown-target="list">
+        {% for item in data.items %}
+            <li role="option">
+                <img
+                    class="search-icon"
+                    src="{{ asset('build/images/product_default.webp') }}"
+                    alt="картинка товара {{ item.name }}"
+                />
+                <a href="{{ path('app_product', {slug:item.slug}) }}" tabindex="-1" data-search-dropdown-target="item">{{ item.name }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+
+
+

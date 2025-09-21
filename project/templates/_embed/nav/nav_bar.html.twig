@@ -1,6 +1,5 @@
-{% set user = app.user %}
 <nav>
-    <ul>
+    <ul class="nav-bar">
         <li>
             {% include '_embed/search/search.html.twig' %}
         </li>
@@ -9,9 +8,9 @@
             {% include '_embed/cart_widget/cart_widget.html.twig' %}
         </li>
 
-        {% if user %}
+        {% if app.user %}
             <li>
-                {% include '_embed/nav/user_widget.html.twig' %}
+                {% include '_embed/nav/user_widget.html.twig' with {user: app.user} %}
             </li>
         {% endif %}
     </ul>

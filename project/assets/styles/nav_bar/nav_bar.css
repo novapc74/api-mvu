@@ -1,0 +1,11 @@
+.email-icon {
+    color: dimgrey;
+    max-height: 32px;
+    max-width: 32px;
+}
+
+.nav-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}

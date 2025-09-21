@@ -22,7 +22,7 @@ final class ProductController extends AbstractController
      * @throws OptimisticLockException
      * @throws ORMException
      */
-    #[Route('/product/{slug}', name: 'product_page', methods: ['GET'])]
+    #[Route('/product/{slug}', name: 'app_product', methods: ['GET'])]
     public function show(string $slug): Response
     {
         return $this->render('pages/product/product.html.twig', [

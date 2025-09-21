@@ -2,16 +2,13 @@
 
 namespace App\Service\Product;
 
-use App\Entity\Product;
-use App\Model\Product\ProductSearchDto;
-use Doctrine\DBAL\Exception;
 use App\Service\Cart\CartHelper;
 use App\Service\Paginator\Paginator;
 use App\Repository\ProductRepository;
+use App\Model\Product\ProductSearchDto;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
 use App\Service\Paginator\PaginatorResponseDto;
-use App\Service\Product\Adapter\ProductCatalogSqlDto;
 
 readonly class ProductService
 {
