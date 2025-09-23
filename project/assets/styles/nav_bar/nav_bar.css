@@ -4,8 +4,7 @@
     max-width: 32px;
 }
 
-.nav-bar {
+.com {
     display: flex;
-    align-items: center;
-    justify-content: space-evenly;
 }
+

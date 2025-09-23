@@ -1,17 +1,26 @@
-<nav>
-    <ul class="nav-bar">
-        <li>
-            {% include '_embed/search/search.html.twig' %}
-        </li>
+<div>
 
-        <li>
-            {% include '_embed/cart_widget/cart_widget.html.twig' %}
-        </li>
+    <div>
+        LOGO
+    </div>
 
-        {% if app.user %}
-            <li>
-                {% include '_embed/nav/user_widget.html.twig' with {user: app.user} %}
-            </li>
-        {% endif %}
-    </ul>
-</nav>
+    <div>
+        {% include '_embed/search/search.html.twig' %}
+    </div>
+
+    <div>
+        {% include '_embed/cart_widget/cart_widget.html.twig' %}
+
+    </div>
+
+    {% if app.user %}
+        <div>
+            {% include '_embed/nav/user_widget.html.twig' with {user: app.user} %}
+        </div>
+    {% endif %}
+
+</div>
+
+
+
+
