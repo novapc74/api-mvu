@@ -1,26 +1,31 @@
-<div class="com">
+<div class="nav_container">
 
-    <div>
-        LOGO
+    <div class="nav_bar_top">
+        test
     </div>
 
-    <div>
-        {% include '_embed/search/search.html.twig' %}
-    </div>
-
-    <div>
-        {% include '_embed/cart_widget/cart_widget.html.twig' %}
-
-    </div>
-
-    {% if app.user %}
+    <div class="nav_bar_bottom">
         <div>
-            {% include '_embed/nav/user_widget.html.twig' with {user: app.user} %}
+            LOGO
         </div>
-    {% endif %}
+
+        <div>
+            {% include '_embed/search/search.html.twig' %}
+        </div>
+
+        <div>
+            {% include '_embed/cart_widget/cart_widget.html.twig' %}
+
+        </div>
+
+        {% if app.user %}
+            <div>
+                {% include '_embed/nav/user_widget.html.twig' with {user: app.user} %}
+            </div>
+        {% endif %}
+    </div>
 
 </div>
-
 
 
 

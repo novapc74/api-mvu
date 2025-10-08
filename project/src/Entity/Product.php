@@ -21,17 +21,22 @@ class Product
     private ?Category $category = null;
 
     /**
-     * @var Collection<int, CartItem>
+     * @var Collection<int, ProductProperty>
      */
-    #[ORM\OneToMany(targetEntity: CartItem::class, mappedBy: 'product', cascade: ['persist', 'remove'], orphanRemoval: true)]
-    private Collection $cartItems;
+    #[ORM\OrderBy(['scale' => 'DESC'])]
+    #[ORM\OneToMany(targetEntity: ProductProperty::class, mappedBy: 'product', cascade: ['persist', 'remove'], fetch: 'EXTRA_LAZY', orphanRemoval: true)]
+    private Collection $productProperties;
 
-    #[ORM\Column]
-    private int $popularityIndex = 0;
+    /**
+     * @var Collection<int, ProductVariant>
+     */
+    #[ORM\OneToMany(targetEntity: ProductVariant::class, mappedBy: 'product', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $productVariants;
 
     public function __construct()
     {
-        $this->cartItems = new ArrayCollection();
+        $this->productProperties = new ArrayCollection();
+        $this->productVariants = new ArrayCollection();
     }
 
     public function getCategory(): ?Category
@@ -47,43 +52,61 @@ class Product
     }
 
     /**
-     * @return Collection<int, CartItem>
+     * @return Collection<int, ProductProperty>
      */
-    public function getCartItems(): Collection
+    public function getProductProperties(): Collection
     {
-        return $this->cartItems;
+        return $this->productProperties;
     }
 
-    public function addCartItem(CartItem $cartItem): static
+    public function addProductProperty(ProductProperty $productProperty): static
     {
-        if (!$this->cartItems->contains($cartItem)) {
-            $this->cartItems->add($cartItem);
-            $cartItem->setProduct($this);
+        if (!$this->productProperties->contains($productProperty)) {
+            $this->productProperties->add($productProperty);
+            $productProperty->setProduct($this);
         }
 
         return $this;
     }
 
-    public function removeCartItem(CartItem $cartItem): static
+    public function removeProductProperty(ProductProperty $productProperty): static
     {
-        if ($this->cartItems->removeElement($cartItem)) {
+        if ($this->productProperties->removeElement($productProperty)) {
             // set the owning side to null (unless already changed)
-            if ($cartItem->getProduct() === $this) {
-                $cartItem->setProduct(null);
+            if ($productProperty->getProduct() === $this) {
+                $productProperty->setProduct(null);
             }
         }
 
         return $this;
     }
 
-    public function getPopularityIndex(): int
+    /**
+     * @return Collection<int, ProductVariant>
+     */
+    public function getProductVariants(): Collection
     {
-        return $this->popularityIndex;
+        return $this->productVariants;
     }
 
-    public function setPopularityIndex(int $popularityIndex): static
+    public function addProductVariant(ProductVariant $productVariant): static
     {
-        $this->popularityIndex = $popularityIndex;
+        if (!$this->productVariants->contains($productVariant)) {
+            $this->productVariants->add($productVariant);
+            $productVariant->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProductVariant(ProductVariant $productVariant): static
+    {
+        if ($this->productVariants->removeElement($productVariant)) {
+            // set the owning side to null (unless already changed)
+            if ($productVariant->getProduct() === $this) {
+                $productVariant->setProduct(null);
+            }
+        }
 
         return $this;
     }

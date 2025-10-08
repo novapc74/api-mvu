@@ -24,8 +24,14 @@ class Logger extends BaseSingleton
 
     private function formatLog(string $type, string $message): void
     {
-        $message = sprintf('%s: %s. Message: %s', $type, self::dateTime(), $message);
-        $this->writeLog($message);
+        $logMessage = sprintf(
+            '%s: %s. Message: %s',
+            $type,
+            self::dateTime(),
+            $message
+        );
+
+        $this->writeLog($logMessage);
     }
 
     private function writeLog(string $message): void
@@ -35,7 +41,7 @@ class Logger extends BaseSingleton
 
     private function dateTime(): string
     {
-        return (new DateTimeImmutable('now'))->format('d.m.Y H:i:s');
+        return (new DateTimeImmutable('now'))->format('Y-m-d H:i:s');
     }
 
     public function toArray(): array

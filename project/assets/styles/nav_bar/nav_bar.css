@@ -4,8 +4,30 @@
     max-width: 32px;
 }
 
-.com {
-    display: flex;
-
+.nav_container {
+    display: block;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
+
+.nav_bar_top {
+    display: flex;
+    max-width: 1440px;
+    height: 36px;
+    margin: auto;
+    align-items: center;
+}
+
+.nav_bar_bottom {
+    display: flex;
+    margin: auto;
+    max-width: 1440px;
+    height: 48px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #0a3622;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+
 

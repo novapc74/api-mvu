@@ -19,8 +19,8 @@ class CartItem
     #[ORM\ManyToOne(targetEntity: Cart::class, cascade: ['persist'], inversedBy: 'cartItems')]
     private ?Cart $cart = null;
 
-    #[ORM\ManyToOne(targetEntity: Product::class, cascade: ['persist'], inversedBy: 'cartItems')]
-    private ?Product $product = null;
+    #[ORM\ManyToOne(targetEntity: ProductVariant::class, cascade: ['persist'])]
+    private ?ProductVariant $product = null;
 
     public function getId(): ?int
     {
@@ -51,12 +51,12 @@ class CartItem
         return $this;
     }
 
-    public function getProduct(): ?Product
+    public function getProduct(): ?ProductVariant
     {
         return $this->product;
     }
 
-    public function setProduct(?Product $product): static
+    public function setProduct(?ProductVariant $product): static
     {
         $this->product = $product;
 

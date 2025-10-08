@@ -1,9 +1,28 @@
 /* main.css */
+@import url("./reset/custom-reset.css");
 @import url("./pagination/pagination.css");
 @import url("./nav_bar/nav_bar.css");
 
 body {
     background-color: snow;
+}
+
+.category_container {
+    display: flex;
+    justify-content: space-evenly; /* или space-around */
+    max-width: 1440px;
+    width: 100%;
+    margin: 10px auto auto;
+}
+
+.category_item {
+    height: 85px;
+    margin: auto;
+    align-content: center;
+}
+
+.category_widget {
+    max-height: 75px;
 }
 
 

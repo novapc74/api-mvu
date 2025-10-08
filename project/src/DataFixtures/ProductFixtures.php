@@ -28,8 +28,7 @@ class ProductFixtures extends AppFixtures implements DependentFixtureInterface
             $name = mb_ucfirst(self::getName($index));
 
             $product
-                ->setName(self::generateName("{$name}_", $count))
-                ->setPopularityIndex(rand(0, 1000));
+                ->setName(self::generateName("{$name}_", $count));
 
             $product->setCategory($thirdLevelCategories[$index]);
 

@@ -42,7 +42,6 @@ services:
         build:
             context: docker
             dockerfile: php-cli/Dockerfile
-        restart: always
         volumes:
             - ./project:/project
         networks:

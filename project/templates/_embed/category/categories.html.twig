@@ -1,7 +1,9 @@
-<ul>
-    {% for category in categories %}
-        <li>
+<section class="category_container">
+
+{% for category in categories %}
+        <div class="category_item">
             {% include '_embed/category/category_widget.html.twig' with category %}
-        </li>
+        </div>
     {% endfor %}
-</ul>
+</section>
+

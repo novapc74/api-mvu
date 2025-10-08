@@ -1,5 +1,6 @@
-<div class="category_widget">
+<div>
     <a href="{{ path('app_category', {slug: category.slug}) }}">
         <span>{{ category.name }}</span>
+        <img src="{{ asset('/build/images/product_default.webp') }}" alt="{{ category.name }}" class="category_widget">
     </a>
 </div>

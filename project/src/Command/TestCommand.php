@@ -2,7 +2,6 @@
 
 namespace App\Command;
 
-use App\Repository\CategoryRepository;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -13,13 +12,11 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'test',
-    description: 'Test command',
+    description: 'Для тестирования.',
 )]
 class TestCommand extends Command
 {
-    public function __construct(
-        private readonly CategoryRepository $categoryRepository,
-    )
+    public function __construct()
     {
         parent::__construct();
     }
@@ -36,25 +33,8 @@ class TestCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $io->title(self::getDescription());
-        $i = 1;
-        foreach ($this->categoryRepository->findAll() as $category) {
-            if ($count = $category->getProducts()?->count()) {
-                echo "$i. $count" . PHP_EOL;
-                $i++;
-            }
-        }
 
-        $arg1 = $input->getArgument('arg1');
-
-        if ($arg1) {
-            $io->note(sprintf('You passed an argument: %s', $arg1));
-        }
-
-        if ($input->getOption('option1')) {
-            // ...
-        }
-
-        $io->success('You have a new command! Now make it your own! Pass --help to see your options.');
+        $io->success('Bingo!');
 
         return Command::SUCCESS;
     }

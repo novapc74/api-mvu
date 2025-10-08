@@ -44,11 +44,10 @@ readonly class ProductService
      */
     public function getProductPage(string $slug): array
     {
-        $product = $this->productRepository->getProduct($slug, $this->cartHelper->getCart());
+        $breadcrumbs = 'пока думаю, как лучше собрать...';
+        $cart = $this->cartHelper->getCart();
+        $product = $this->productRepository->getProduct($slug, $cart);
 
-        return [
-            'breadcrumbs' => 'пока думаю, как лучше собрать...',
-            'product' => $product,
-        ];
+        return compact('breadcrumbs', 'product');
     }
 }
