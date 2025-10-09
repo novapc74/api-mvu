@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20251008100638 extends AbstractMigration
+final class Version20251009122645 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -31,7 +31,7 @@ final class Version20251008100638 extends AbstractMigration
         $this->addSql('CREATE TABLE product_variant (id INT AUTO_INCREMENT NOT NULL, product_id BINARY(16) DEFAULT NULL COMMENT \'(DC2Type:uuid)\', size_id INT DEFAULT NULL, gender_id INT DEFAULT NULL, color_id INT DEFAULT NULL, popularity_index INT NOT NULL, INDEX IDX_209AA41D4584665A (product_id), INDEX IDX_209AA41D498DA827 (size_id), INDEX IDX_209AA41D708A0E0 (gender_id), INDEX IDX_209AA41D7ADA1FB5 (color_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE property (id INT AUTO_INCREMENT NOT NULL, measure_id INT DEFAULT NULL, name VARCHAR(255) NOT NULL, UNIQUE INDEX UNIQ_8BF21CDE5E237E06 (name), INDEX IDX_8BF21CDE5DA37D00 (measure_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE size (id INT AUTO_INCREMENT NOT NULL, size VARCHAR(5) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE stock (id INT AUTO_INCREMENT NOT NULL, warehouse_id INT DEFAULT NULL, product_variant_id INT DEFAULT NULL, value INT DEFAULT NULL, INDEX IDX_4B3656605080ECDE (warehouse_id), INDEX IDX_4B365660A80EF684 (product_variant_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE stock (id INT AUTO_INCREMENT NOT NULL, warehouse_id INT DEFAULT NULL, product_variant_id INT DEFAULT NULL, price INT DEFAULT NULL, amount INT DEFAULT NULL, INDEX IDX_4B3656605080ECDE (warehouse_id), INDEX IDX_4B365660A80EF684 (product_variant_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE user (id INT AUTO_INCREMENT NOT NULL, email VARCHAR(180) NOT NULL, roles JSON NOT NULL COMMENT \'(DC2Type:json)\', password VARCHAR(255) NOT NULL, UNIQUE INDEX UNIQ_IDENTIFIER_EMAIL (email), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE warehouse (id INT AUTO_INCREMENT NOT NULL, name VARCHAR(50) NOT NULL, address VARCHAR(255) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('ALTER TABLE cart_item ADD CONSTRAINT FK_F0FE25271AD5CDBF FOREIGN KEY (cart_id) REFERENCES cart (id)');

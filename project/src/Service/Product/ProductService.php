@@ -2,6 +2,7 @@
 
 namespace App\Service\Product;
 
+use App\Entity\ProductVariant;
 use App\Service\Cart\CartHelper;
 use App\Service\Paginator\Paginator;
 use App\Repository\ProductRepository;
@@ -9,6 +10,7 @@ use App\Model\Product\ProductSearchDto;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
 use App\Service\Paginator\PaginatorResponseDto;
+use Symfony\Component\Uid\Uuid;
 
 readonly class ProductService
 {

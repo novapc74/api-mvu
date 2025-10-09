@@ -16,20 +16,15 @@ class SizeRepository extends ServiceEntityRepository
         parent::__construct($registry, Size::class);
     }
 
-    //    /**
-    //     * @return Size[] Returns an array of Size objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('s.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function getSizeNameCollection(): array
+    {
+        $qb = $this->createQueryBuilder('s')
+            ->select('s.size')
+            ->orderBy('s.id')
+            ->getQuery()->getResult();
+
+        return array_column($qb, 'size');
+    }
 
     //    public function findOneBySomeField($value): ?Size
     //    {

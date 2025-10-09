@@ -4,12 +4,16 @@ namespace App\Repository;
 
 use App\Entity\Cart;
 use App\Entity\Product;
-use App\Model\Product\ProductSearchDto;
-use App\Service\Paginator\Paginator;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\Exception;
 use Doctrine\ORM\QueryBuilder;
+use App\Exception\CustomException;
+use App\Service\Paginator\Paginator;
+use App\Model\Product\ProductSearchDto;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Doctrine\Types\UuidType;
+use Symfony\Component\HttpFoundation\Response;
+use App\Service\Api\Product\Interface\SqlInterface;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @extends ServiceEntityRepository<Product>
@@ -19,6 +23,41 @@ class ProductRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Product::class);
+    }
+
+    /**
+     * @throws CustomException
+     */
+    public function getProductPageData(SqlInterface $dto): array
+    {
+        $sql = $dto->getSql();
+        $param = $dto->getParam();
+        $type = $dto->getType();
+
+        try {
+
+            $result = $this->getEntityManager()
+                ->getConnection()
+                ->executeQuery($sql, $param, $type)
+                ->fetchAssociative();
+
+            if (array_key_exists('children', $result)) {
+                $result['children'] = json_decode($result['children'], true);
+            }
+
+            if (array_key_exists('properties', $result)) {
+                $result['properties'] = json_decode($result['properties'], true);
+            }
+
+            if (array_key_exists('images', $result)) {
+                $result['images'] = json_decode($result['images'], true);
+            }
+
+            return $result;
+
+        } catch (Exception $exception) {
+            throw new CustomException($exception->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     public function getProductCount(?ProductSearchDto $dto = null): int

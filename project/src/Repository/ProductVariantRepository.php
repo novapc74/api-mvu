@@ -16,28 +16,25 @@ class ProductVariantRepository extends ServiceEntityRepository
         parent::__construct($registry, ProductVariant::class);
     }
 
-    //    /**
-    //     * @return ProductVariant[] Returns an array of ProductVariant objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('p.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?ProductVariant
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    public function getProductVariantData(string $productId, int $productVariantId): array
+    {
+        return $this->createQueryBuilder('pv')
+            ->select([
+                'pv.id',
+                'p.id as productId',
+                'pv.popularityIndex',
+                's.size',
+                "CONCAT(c.name, '-',  c.hexCode) as color",
+                'g.gender',
+            ])
+            ->andWhere('pv.id = :productVariantId')
+            ->setParameter('productVariantId', $productVariantId)
+            ->innerJoin('pv.size', 's')
+            ->innerJoin('pv.color', 'c')
+            ->innerJoin('pv.gender', 'g')
+            ->innerJoin('pv.product', 'p')
+//            ->leftJoin('pv.stocks', 'st')
+            ->getQuery()
+            ->getArrayResult();
+    }
 }

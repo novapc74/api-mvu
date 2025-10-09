@@ -16,7 +16,7 @@ class ProductFixtures extends AppFixtures implements DependentFixtureInterface
         '95', '5', '180'
     ];
 
-    private const THIRD_LEVEL_CATEGORIES_COUNT = 26;
+    private const THIRD_LEVEL_CATEGORIES_COUNT = 27;
     private const PRODUCT_COUNT = 324;
     private const PROPERTY_COUNT = 3;
 
@@ -27,7 +27,7 @@ class ProductFixtures extends AppFixtures implements DependentFixtureInterface
     {
         $thirdLevelCategories = array_map(
             fn(int $i) => $this->getReference("ThirdLevel_Category_$i", Category::class),
-            range(0, self::THIRD_LEVEL_CATEGORIES_COUNT)
+            range(0, self::THIRD_LEVEL_CATEGORIES_COUNT - 1)
         );
 
         /** Для каждой категории создаём 12 товаров */

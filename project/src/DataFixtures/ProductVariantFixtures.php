@@ -23,9 +23,6 @@ class ProductVariantFixtures extends AppFixtures implements DependentFixtureInte
     private const WAREHOUSE_COUNT = 3;
     private const PRODUCT_COUNT = 324;
 
-    private const PRODUCT_PROPERTY_COUNT = 3;
-
-
     /**
      * @throws ReflectionException
      */
@@ -49,7 +46,7 @@ class ProductVariantFixtures extends AppFixtures implements DependentFixtureInte
             /** Генерируем комбинации: size, gender, color (циклически для 19 вариантов) */
             $sizeIndex = $variantIndex % self::SIZE_COUNT;
             $genderIndex = intdiv($variantIndex, self::SIZE_COUNT) % self::GENDER_COUNT;
-            $colorIndex = intdiv($variantIndex, self::SIZE_COUNT * self::GENDER_COUNT) % self::COLOR_COUNT;
+            $colorIndex = intdiv($variantIndex, self::COLOR_COUNT) % self::COLOR_COUNT;
 
             $size = $this->getReference("Size_$sizeIndex", Size::class);
             $gender = $this->getReference("Gender_$genderIndex", Gender::class);
@@ -65,7 +62,7 @@ class ProductVariantFixtures extends AppFixtures implements DependentFixtureInte
 
         /** Создаем Stock для каждого ProductVariant в каждом Warehouse */
         $totalStock = $totalVariants * self::WAREHOUSE_COUNT;
-        $this->createEntity(Stock::class, $totalStock, function ($stock, $index) {
+        $this->createEntity(Stock::class, $totalStock, function (Stock $stock, $index) {
 
             $variantIndex = intdiv($index, self::WAREHOUSE_COUNT);
             $warehouseIndex = $index % self::WAREHOUSE_COUNT;
@@ -74,7 +71,8 @@ class ProductVariantFixtures extends AppFixtures implements DependentFixtureInte
             $warehouse = $this->getReference("Warehouse_$warehouseIndex", Warehouse::class);
 
             $stock
-                ->setValue(rand(0, 100))
+                ->setPrice(rand(0, 100))
+                ->setAmount(rand(0, 150))
                 ->setProductVariant($variant)
                 ->setWarehouse($warehouse);
         });

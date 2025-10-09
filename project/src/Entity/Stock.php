@@ -14,7 +14,10 @@ class Stock
     private ?int $id = null;
 
     #[ORM\Column(nullable: true)]
-    private ?int $value = null;
+    private ?int $price = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $amount = null;
 
     #[ORM\ManyToOne(targetEntity: Warehouse::class, cascade: ['persist'], inversedBy: 'stocks')]
     private ?Warehouse $warehouse = null;
@@ -27,14 +30,14 @@ class Stock
         return $this->id;
     }
 
-    public function getValue(): ?int
+    public function getPrice(): ?int
     {
-        return $this->value;
+        return $this->price;
     }
 
-    public function setValue(?int $value): static
+    public function setPrice(?int $price): static
     {
-        $this->value = $value;
+        $this->price = $price;
 
         return $this;
     }
@@ -59,6 +62,18 @@ class Stock
     public function setProductVariant(?ProductVariant $productVariant): static
     {
         $this->productVariant = $productVariant;
+
+        return $this;
+    }
+
+    public function getAmount(): ?int
+    {
+        return $this->amount;
+    }
+
+    public function setAmount(?int $amount): static
+    {
+        $this->amount = $amount;
 
         return $this;
     }
