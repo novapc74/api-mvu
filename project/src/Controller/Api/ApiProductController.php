@@ -4,7 +4,6 @@ namespace App\Controller\Api;
 
 use App\Exception\CustomException;
 use App\Service\Api\Product\ApiProductService;
-use App\Service\ApiResponse\ApiResponseFactory;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,12 +21,8 @@ class ApiProductController extends AbstractController
     #[Route('/{slug}', name: 'app_product_variant', methods: ['GET'])]
     public function getProductVariant(string $slug): Response
     {
-        $productPageData = $this->service->getProductData($slug);
-
-        return ApiResponseFactory::responseHelper($productPageData);
-
         return $this->render('pages/product/product_page.html.twig', [
-            'productPage' => $productPageData,
+            'data' => $this->service->getProductData($slug),
         ]);
     }
 }

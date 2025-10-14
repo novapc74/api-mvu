@@ -1,0 +1,15 @@
+{% extends 'site_part_base.html.twig' %}
+
+{% block title %}{{ category.meta_title }}{% endblock %}
+
+{% block meta_description %}{{ category.meta_description }}{% endblock %}
+
+{% block body %}
+
+    <div>
+        {% for product in category.products %}
+            {% include 'pages/product/product_card.html.twig' with { data: product } %}
+        {% endfor %}
+    </div>
+
+{% endblock %}

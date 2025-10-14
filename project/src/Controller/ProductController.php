@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\Product;
 use App\Model\Product\ProductSearchDto;
 use App\Service\Product\ProductService;
 use Doctrine\ORM\Exception\ORMException;
@@ -12,6 +11,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
+#[Route('/product')]
 final class ProductController extends AbstractController
 {
     public function __construct(private readonly ProductService $service)
@@ -22,7 +22,7 @@ final class ProductController extends AbstractController
      * @throws OptimisticLockException
      * @throws ORMException
      */
-    #[Route('/product/{slug}', name: 'app_product', methods: ['GET'])]
+    #[Route('/{slug}', name: 'app_product', methods: ['GET'])]
     public function show(string $slug): Response
     {
         return $this->render('pages/product/product.html.twig', [
@@ -34,7 +34,7 @@ final class ProductController extends AbstractController
      * @throws OptimisticLockException
      * @throws ORMException
      */
-    #[Route('/product', name: 'app_catalog', methods: ['GET'])]
+    #[Route('', name: 'app_catalog', methods: ['GET'])]
     public function index(
         #[MapQueryString] ProductSearchDto $dto
     ): Response

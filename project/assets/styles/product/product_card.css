@@ -1,0 +1,65 @@
+.filters {
+    padding-top: 16px;
+    display: block;
+}
+.filter-row {
+    text-align: center;
+}
+
+.filter-btn {
+    margin: 12px 3px 0 3px;
+    padding: 7px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    transition: opacity 0.3s, background-color 0.3s;
+    font-size: 12px;
+}
+
+.filter-btn.selected {
+    background-color: #007bff;
+    color: white;
+}
+
+.filter-btn.disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.color-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+}
+
+.color-btn.selected {
+    border-radius: 25%;
+    border: 2px solid gray;
+}
+
+.reset-btn.selected {
+    background-color: darkred;
+    color: white;
+    border: none;
+    font-weight: bold;
+}
+
+.product-title {
+    text-align: center;
+    font-size: 24px;
+    padding-top: 16px;
+}
+
+.product-nav {
+    width: 320px;
+    height: 230px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+}
+
+.price-display {
+    font-size: 18px;
+    font-weight: bold;
+    color: darkred;
+    text-align: center;
+    padding-top: 16px;
+}

@@ -1,6 +1,14 @@
 {% extends 'site_part_base.html.twig' %}
 
+{% block title %}{{ data.name }}{% endblock %}
+
+{% block meta_description %}
+    <meta name="description" content="{{ data.name }} в розницу и оптом! Санкт-Петербург">
+{% endblock %}
+
+
 {% block body %}
 
+    {% include 'pages/product/product_card.html.twig' %}
 
 {% endblock %}

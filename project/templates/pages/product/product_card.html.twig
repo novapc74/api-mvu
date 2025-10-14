@@ -1,0 +1,56 @@
+<div class="product-nav" id="product-nav" data-controller="product-card"
+     data-product-card-data-value="{{ data.object }}">
+    <h2 class="product-title">{{ data.name }}</h2>
+    <div class="filters">
+        <div class="filter-row">
+            <div class="color-list">
+                {% for colorHex, sizes in data.children.colors %}
+                    <button class="filter-btn color-btn" data-action="product-card#selectFilter" data-type="color"
+                            data-value="{{ colorHex }}" style="background-color: {{ colorHex }};">
+                        <span style="color: {{ colorHex }}">{{ colorHex|first }}</span>
+                    </button>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="filter-row">
+            <div class="size-list">
+                {% set allSizes = [] %}
+                {% for colorHex, sizes in data.children.colors %}
+                    {% for size, genders in sizes %}
+                        {% if size not in allSizes %}
+                            {% set allSizes = allSizes|merge([size]) %}
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+                {% for size in allSizes %}
+                    <button class="filter-btn size-btn" data-action="product-card#selectFilter" data-type="size"
+                            data-value="{{ size }}">{{ size }}</button>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="filter-row">
+            <div class="gender-list">
+                {% set allGenders = [] %}
+                {% for colorHex, sizes in data.children.colors %}
+                    {% for size, genders in sizes %}
+                        {% for gender, stock in genders %}
+                            {% if gender not in allGenders %}
+                                {% set allGenders = allGenders|merge([gender]) %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                {% endfor %}
+                {% for gender in allGenders %}
+                    <button class="filter-btn gender-btn" data-action="product-card#selectFilter" data-type="gender"
+                            data-value="{{ gender }}">{{ gender }}</button>
+                {% endfor %}
+                <button class="filter-btn reset-btn" data-action="product-card#resetFilters">CLEAR</button>
+            </div>
+        </div>
+    </div>
+    <div class="price-display" id="price-display">
+        <span data-product-card-target="price">-</span>
+    </div>
+
+
+</div>

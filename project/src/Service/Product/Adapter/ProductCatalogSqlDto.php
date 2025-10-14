@@ -14,9 +14,9 @@ final class ProductCatalogSqlDto implements SqlDoctrineInterface
     private static ?QueryParamInterface $queryData;
 
     public static function init(
-        PaginatorInterface  $paginator = null,
-        Cart                $cart = null,
-        QueryParamInterface $queryData = null
+        ?PaginatorInterface  $paginator,
+        ?Cart                $cart,
+        ?QueryParamInterface $queryData
     ): self
     {
         $instance = new self();

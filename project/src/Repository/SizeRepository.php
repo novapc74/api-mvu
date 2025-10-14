@@ -25,14 +25,4 @@ class SizeRepository extends ServiceEntityRepository
 
         return array_column($qb, 'size');
     }
-
-    //    public function findOneBySomeField($value): ?Size
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
 }

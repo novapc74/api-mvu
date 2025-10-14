@@ -14,6 +14,7 @@ use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\Api\Product\Interface\SqlInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * @extends ServiceEntityRepository<Product>
@@ -35,29 +36,20 @@ class ProductRepository extends ServiceEntityRepository
         $type = $dto->getType();
 
         try {
-
-            $result = $this->getEntityManager()
+            $result =  $this->getEntityManager()
                 ->getConnection()
                 ->executeQuery($sql, $param, $type)
                 ->fetchAssociative();
 
-            if (array_key_exists('children', $result)) {
-                $result['children'] = json_decode($result['children'], true);
-            }
-
-            if (array_key_exists('properties', $result)) {
-                $result['properties'] = json_decode($result['properties'], true);
-            }
-
-            if (array_key_exists('images', $result)) {
-                $result['images'] = json_decode($result['images'], true);
-            }
-
-            return $result;
-
         } catch (Exception $exception) {
             throw new CustomException($exception->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
+
+        if (is_array($result)) {
+            return $result;
+        }
+
+        throw new NotFoundHttpException('Товар не найден',);
     }
 
     public function getProductCount(?ProductSearchDto $dto = null): int
@@ -98,10 +90,11 @@ class ProductRepository extends ServiceEntityRepository
             ->select([
                 'p.id',
                 'p.name',
-                'p.slug',
-                'p.popularityIndex'
+                'p.slug'
+//                'p.popularityIndex'
             ])
-            ->orderBy('p.popularityIndex', 'DESC');
+//            ->orderBy('p.popularityIndex', 'DESC')
+        ;
 
         if ($cart) {
             $qb->addSelect('COALESCE(ci.quantity, 0) AS quantity')
