@@ -26,10 +26,15 @@ class ProductRepository extends ServiceEntityRepository
         parent::__construct($registry, Product::class);
     }
 
+    public function getProductsByCategorySlug(string $categorySlug): array
+    {
+
+    }
+
     /**
      * @throws CustomException
      */
-    public function getProductPageData(SqlInterface $dto): array
+    public function resolveSql(SqlInterface $dto): array
     {
         $sql = $dto->getSql();
         $param = $dto->getParam();
@@ -49,7 +54,7 @@ class ProductRepository extends ServiceEntityRepository
             return $result;
         }
 
-        throw new NotFoundHttpException('Товар не найден',);
+        throw new NotFoundHttpException('Товар не найден');
     }
 
     public function getProductCount(?ProductSearchDto $dto = null): int

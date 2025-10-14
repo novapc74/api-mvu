@@ -17,8 +17,8 @@ readonly class BreadcrumbsService
     /**
      * @throws Exception
      */
-    public function getBreadcrumbsByCategory(Category $category): array
+    public function getBreadcrumbsByCategory(string $categorySlug): array
     {
-        return $this->categoryRepository->getBreadCrumbsDataByCategory($category);
+        return $this->categoryRepository->getBreadCrumbsDataByCategory($categorySlug);
     }
 }

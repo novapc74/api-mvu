@@ -1,23 +1,27 @@
-{% extends 'base.html.twig' %}
+{% extends 'site_part_base.html.twig' %}
 
-{% block title %}Hello CategoryController!{% endblock %}
+{% block title %}Категрия{% endblock %}
 
 {% block body %}
 
-    {% for item in breadcrumbs %}
-        <p>id: {{ item.id }}</p>
+{#    {% for item in breadcrumbs %}#}
+{#        <p>id: {{ item.id }}</p>#}
 
-        <span>Категория: </span>
-        {% if item.is_active %}
-            <p>{{ item.category_name }}</p>
-        {% else %}
-            <a href="{{ path('app_category', {slug: item.slug}) }}">slug: {{ item.category_name }}</a>
-        {% endif %}
+{#        <span>Категория: </span>#}
+{#        {% if item.is_active %}#}
+{#            <p>{{ item.category_name }}</p>#}
+{#        {% else %}#}
+{#            <a href="{{ path('app_category', {slug: item.slug}) }}">slug: {{ item.category_name }}</a>#}
+{#        {% endif %}#}
 
-        {% if  item.product_count %}
-            <p>Количество товаров: {{ item.product_count }}</p>
-        {% endif %}
-        <hr>
+{#        {% if  item.product_count %}#}
+{#            <p>Количество товаров: {{ item.product_count }}</p>#}
+{#        {% endif %}#}
+{#        <hr>#}
+{#    {% endfor %}#}
+
+    {% for product in products %}
+        {% include 'pages/product/product_card.html.twig' with {data: product} %}
     {% endfor %}
 
 {% endblock %}

@@ -21,7 +21,7 @@ readonly class ApiProductService
      */
     public function getProductData(string $slug): array
     {
-        $data = $this->productRepository->getProductPageData(ProductPageDto::init($slug));
+        $data = $this->productRepository->resolveSql(ProductPageDto::init($slug));
 
         ProcessedProductCard::processed($data);
 

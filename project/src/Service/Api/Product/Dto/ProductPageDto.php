@@ -15,7 +15,7 @@ final readonly class ProductPageDto implements SqlInterface
     public static function init(mixed $data): SqlInterface
     {
         if (!is_string($data)) {
-            throw new InvalidArgumentException('Data must be string');
+            throw new InvalidArgumentException('Data must be a string');
         }
 
         return new self($data);

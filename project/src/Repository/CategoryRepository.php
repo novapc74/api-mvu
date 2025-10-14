@@ -33,7 +33,7 @@ class CategoryRepository extends ServiceEntityRepository
     /**
      * @throws Exception
      */
-    public function getBreadCrumbsDataByCategory(Category $category): array
+    public function getBreadCrumbsDataByCategory(string $categorySlug): array
     {
         $connection = $this->getEntityManager()->getConnection();
 
@@ -41,7 +41,7 @@ class CategoryRepository extends ServiceEntityRepository
         WITH RECURSIVE category_chain AS (
             SELECT id, name, slug, category_id, 0 AS level
             FROM category
-            WHERE id = UNHEX(REPLACE(:category_id, '-', ''))
+            WHERE slug =:categorySlug
             UNION ALL
             SELECT c.id, c.name, c.slug, c.category_id, cc.level + 1
             FROM category c
@@ -52,7 +52,7 @@ class CategoryRepository extends ServiceEntityRepository
             cc.name AS category_name,
             cc.slug,
             cc.level,
-            CASE WHEN cc.id = UNHEX(REPLACE(:category_id, '-', '')) THEN 1 ELSE 0 END AS is_active,  -- 1 (true) для текущей категории
+            CASE WHEN cc.slug =:categorySlug THEN 1 ELSE 0 END AS is_active,  -- 1 (true) для текущей категории
             cc.category_id AS parent_category_id,
             CASE
                 WHEN (SELECT COUNT(*) FROM category WHERE category_id = cc.id) > 0 THEN NULL
@@ -63,7 +63,7 @@ class CategoryRepository extends ServiceEntityRepository
     ";
 
         $stmt = $connection->prepare($sql);
-        $stmt->bindValue('category_id', $category->getId());  // Строка UUID
+        $stmt->bindValue('categorySlug', $categorySlug);  // Строка UUID
         $result = $stmt->executeQuery();
 
         // Функция для конвертации бинарного UUID в строку
